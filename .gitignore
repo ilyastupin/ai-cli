@@ -1,0 +1,12 @@
+node_modules
+
+/.cache
+/build
+#.env
+**/mysql-data
+public/build
+secrets.txt
+**/backups
+**/*.zip
+out
+#.env-remote*

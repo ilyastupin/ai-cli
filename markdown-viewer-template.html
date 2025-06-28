@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Markdown Viewer</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            background: #fefefe;
+            color: #222;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 1em;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: monospace;
+        }
+
+        h1,
+        h2,
+        h3 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 0.3em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat Viewer</h1>
+    <div id="preview"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const markdown = `__MARKDOWN_PLACEHOLDER__`
+        document.getElementById('preview').innerHTML = marked.parse(markdown)
+    </script>
+</body>
+
+</html>
