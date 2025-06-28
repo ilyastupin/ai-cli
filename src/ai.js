@@ -1,4 +1,3 @@
-// src/ai.js
 import fs from 'fs'
 import path from 'path'
 import OpenAI from 'openai'
@@ -66,11 +65,21 @@ export async function uploadFile(filePath) {
 
 export async function listFiles() {
   const result = await openai.files.list()
-  return result.data.map(file => ({
+  return result.data.map((file) => ({
     id: file.id,
     name: file.filename,
     size: file.bytes,
     createdAt: new Date(file.created_at * 1000).toLocaleString(),
     purpose: file.purpose
   }))
+}
+
+export async function deleteFile(fileId) {
+  try {
+    const res = await openai.files.delete(fileId)
+    return { deleted: true, id: res.id }
+  } catch (err) {
+    console.warn(`❌ Failed to delete file ${fileId}: ${err.message}`)
+    return { deleted: false, error: err.message }
+  }
 }

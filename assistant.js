@@ -4,7 +4,7 @@ import path from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { generateMarkdownHtml } from './src/markdown.js'
-import { askQuestion, uploadFile, listFiles } from './src/ai.js'
+import { askQuestion, uploadFile, listFiles, deleteFile } from './src/ai.js'
 import { getQuestion, putAnswer } from './src/parser.js'
 import { braveSearchToFile } from './src/brave.js'
 
@@ -17,6 +17,7 @@ function showHelpAndExit() {
 Usage:
   node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search]
   node assistant.js --upload <file>
+  node assistant.js --delete <file-id>
   node assistant.js --list
 
 Options:
@@ -24,6 +25,7 @@ Options:
   --open-md             Render markdown to HTML and open after answering
   --use <ids>           Attach one or more uploaded file IDs (comma-separated)
   --upload <file>       Upload a file (purpose: assistants)
+  --delete <file-id>    Delete a file by ID from OpenAI
   --list                List uploaded files
   --search              Perform Brave search and attach results to assistant
   --help                Show this message
@@ -36,6 +38,7 @@ if (args.includes('--help') || args.length === 0) showHelpAndExit()
 
 const chatIndex = args.indexOf('--chat')
 const uploadIndex = args.indexOf('--upload')
+const deleteIndex = args.indexOf('--delete')
 const useIndex = args.indexOf('--use')
 const searchEnabled = args.includes('--search')
 
@@ -57,6 +60,18 @@ if (uploadIndex !== -1 && args[uploadIndex + 1]) {
   console.log(`  Purpose: ${uploaded.purpose}`)
   console.log(`  Size: ${uploaded.size} bytes`)
   console.log(`  Created: ${uploaded.createdAt}`)
+  process.exit(0)
+}
+
+// --- Delete file
+if (deleteIndex !== -1 && args[deleteIndex + 1]) {
+  const fileId = args[deleteIndex + 1]
+  const result = await deleteFile(fileId)
+  if (result.deleted) {
+    console.log(`🗑️ Deleted file: ${fileId}`)
+  } else {
+    console.warn(`❌ Delete failed: ${result.error}`)
+  }
   process.exit(0)
 }
 
@@ -118,6 +133,8 @@ const { answer, threadId } = await askQuestion({
   fileIds,
   threadId: lastThreadId
 })
+
+// Remove Brave-style reference markers from response
 const cleanAnswer = answer.replace(/【\d+:\d+†.*?】/g, '')
 await putAnswer(chatFile, cleanAnswer, threadId, lastAnswerIndex)
 
