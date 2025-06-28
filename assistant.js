@@ -6,7 +6,7 @@ import { promisify } from 'util'
 import { fileURLToPath } from 'url'
 import { generateMarkdownHtml } from './src/markdown.js'
 import { askQuestion, uploadFile, listFiles, deleteFile } from './src/ai.js'
-import { getQuestion, putAnswer } from './src/parser.js'
+import { getQuestion, putAnswer, getLastAnswer } from './src/parser.js'
 import { braveSearchToFile } from './src/brave.js'
 
 const execAsync = promisify(exec)
@@ -21,13 +21,15 @@ function showHelpAndExit() {
 📦 Version: ${pkg.version}
 
 Usage:
-  node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search]
+  node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search] [--last] [--remove-md]
   node assistant.js --upload <file>
   node assistant.js --delete <file-id>
   node assistant.js --list
 
 Options:
   --chat <file.txt>     Run assistant with chat file (thread continues via embedded thread_id)
+  --last                Show the last assistant response and exit
+  --remove-md           Strip markdown from last response (only used with --last)
   --open-md             Render markdown to HTML and open after answering
   --use <ids>           Attach one or more uploaded file IDs (comma-separated)
   --upload <file>       Upload a file (purpose: assistants)
@@ -47,6 +49,8 @@ const uploadIndex = args.indexOf('--upload')
 const deleteIndex = args.indexOf('--delete')
 const useIndex = args.indexOf('--use')
 const searchEnabled = args.includes('--search')
+const showLastOnly = args.includes('--last')
+const removeMd = args.includes('--remove-md')
 
 // Parse multiple --use file IDs if present
 let fileIds = []
@@ -94,11 +98,19 @@ if (args.includes('--list')) {
   process.exit(0)
 }
 
-// --- Chat file logic
+// --- Chat file required
 if (chatIndex === -1 || !args[chatIndex + 1]) showHelpAndExit()
 const chatFile = path.resolve(args[chatIndex + 1])
 const fileContent = await fsPromises.readFile(chatFile, 'utf8')
 
+// --- Show last answer only (possibly with --remove-md)
+if (showLastOnly) {
+  const lastAnswer = getLastAnswer(fileContent, removeMd)
+  if (lastAnswer) process.stdout.write(lastAnswer.trim() + '\n')
+  process.exit(0)
+}
+
+// --- Parse next question
 const { remainder, lastThreadId, lastAnswerIndex } = getQuestion(fileContent)
 if (!remainder) {
   console.log('✅ No new question found after last answer.')
@@ -132,7 +144,7 @@ if (searchEnabled) {
   }
 }
 
-// --- Ask final question
+// --- Ask assistant
 console.log('🤖 Asking assistant...')
 const { answer, threadId } = await askQuestion({
   question: remainder,

@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import removeMd from 'remove-markdown'
 
 /**
  * Extracts the next unanswered question and metadata from the chat file content.
@@ -28,4 +29,20 @@ export async function putAnswer(chatFilePath, answer, threadId, lastAnswerIndex)
   const newBlock = `\n\n### answer #${currentIndex}\n${answer.trim()}\n\nanswer #${currentIndex} end (${threadId})\n\n---\n`
   await fs.appendFile(chatFilePath, newBlock)
   console.log('📁 Answer written to file.')
+}
+
+/**
+ * Returns the last assistant answer found in the file.
+ * Optionally strips markdown formatting.
+ * @param {string} fileContent
+ * @param {boolean} stripMarkdown
+ * @returns {string|null}
+ */
+export function getLastAnswer(fileContent, stripMarkdown = false) {
+  const answerBlockRegex = /### answer #(\d+)\n([\s\S]*?)\n\nanswer #\1 end \((thread_[^\)]+)\)\n\n---/g
+  let lastMatch
+  for (const match of fileContent.matchAll(answerBlockRegex)) lastMatch = match
+  if (!lastMatch) return null
+  const rawAnswer = lastMatch[2]
+  return stripMarkdown ? removeMd(rawAnswer) : rawAnswer
 }
