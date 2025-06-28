@@ -1,14 +1,20 @@
-// markdown.js
+// src/markdown.js
 import fs from 'fs/promises'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
 const execAsync = promisify(exec)
 
+// 🔧 Make __dirname work in ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 export async function generateMarkdownHtml(chatFile, fileContent, extra = '') {
-  const templatePath = path.resolve('markdown-viewer-template.html')
-  const outDir = path.resolve('out')
+  // ✅ Resolve relative to the current file (so CLI usage from other dirs works)
+  const templatePath = path.resolve(__dirname, '../starter-app/markdown-viewer-template.html')
+  const outDir = path.resolve(__dirname, '../out')
   await fs.mkdir(outDir, { recursive: true })
 
   const htmlFilename = path.basename(chatFile).replace(/\.txt$/, '.html')
