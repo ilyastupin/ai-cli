@@ -11,3 +11,4 @@ secrets.txt
 out
 #.env-remote*
 archive.*
+tmp
