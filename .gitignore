@@ -10,3 +10,4 @@ secrets.txt
 **/*.zip
 out
 #.env-remote*
+archive.*
