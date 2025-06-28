@@ -7,13 +7,12 @@ import { promisify } from 'util'
 
 const execAsync = promisify(exec)
 
-// 🔧 Make __dirname work in ES modules
+// Support __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 export async function generateMarkdownHtml(chatFile, fileContent, extra = '') {
-  // ✅ Resolve relative to the current file (so CLI usage from other dirs works)
-  const templatePath = path.resolve(__dirname, '../starter-app/markdown-viewer-template.html')
+  const templatePath = path.resolve(__dirname, '../markdown-viewer-template.html') // ✅ fixed
   const outDir = path.resolve(__dirname, '../out')
   await fs.mkdir(outDir, { recursive: true })
 
