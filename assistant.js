@@ -1,4 +1,5 @@
-import fs from 'fs/promises'
+import fs from 'fs'
+import fsPromises from 'fs/promises'
 import path from 'path'
 import OpenAI from 'openai'
 import { exec } from 'child_process'
@@ -39,11 +40,14 @@ const fileIds = useIndex !== -1 && args[useIndex + 1] ? [args[useIndex + 1]] : [
 // --- Upload file
 if (uploadIndex !== -1 && args[uploadIndex + 1]) {
   const filePath = path.resolve(args[uploadIndex + 1])
-  const file = await fs.readFile(filePath)
-  const name = path.basename(filePath)
+  const stream = fs.createReadStream(filePath)
 
-  const uploaded = await openai.files.create({ file, purpose: 'assistants' })
-  console.log(`✅ Uploaded ${name}`)
+  const uploaded = await openai.files.create({
+    file: stream,
+    purpose: 'assistants'
+  })
+
+  console.log(`✅ Uploaded ${uploaded.filename}`)
   console.log(`  ID: ${uploaded.id}`)
   console.log(`  Purpose: ${uploaded.purpose}`)
   console.log(`  Size: ${uploaded.bytes} bytes`)
@@ -67,7 +71,7 @@ if (args.includes('--list')) {
 // --- Chat file logic
 if (chatIndex === -1 || !args[chatIndex + 1]) showHelpAndExit()
 const chatFile = path.resolve(args[chatIndex + 1])
-const fileContent = await fs.readFile(chatFile, 'utf8')
+const fileContent = await fsPromises.readFile(chatFile, 'utf8')
 
 const answerBlockRegex = /### answer #(\d+)\n([\s\S]*?)\n\nanswer #\1 end \((thread_[^\)]+)\)\n\n---/g
 let lastMatch
@@ -92,14 +96,16 @@ const assistant = await openai.beta.assistants.create({
 })
 
 const thread = lastThreadId ? { id: lastThreadId } : await openai.beta.threads.create()
-console.log(fileIds)
+
 await openai.beta.threads.messages.create(thread.id, {
   role: 'user',
   content: remainder,
-  attachments: fileIds.map((file_id) => ({
-    file_id,
-    tools: [{ type: 'file_search' }]
-  }))
+  ...(fileIds.length > 0 && {
+    attachments: fileIds.map((file_id) => ({
+      file_id,
+      tools: [{ type: 'file_search' }]
+    }))
+  })
 })
 
 const run = await openai.beta.threads.runs.create(thread.id, {
@@ -122,7 +128,7 @@ const messages = await openai.beta.threads.messages.list(thread.id)
 const answer = messages.data.find((m) => m.role === 'assistant')?.content?.[0]?.text?.value || ''
 const currentIndex = lastAnswerIndex + 1
 const newBlock = `\n\n### answer #${currentIndex}\n${answer.trim()}\n\nanswer #${currentIndex} end (${thread.id})\n\n---\n`
-await fs.appendFile(chatFile, newBlock)
+await fsPromises.appendFile(chatFile, newBlock)
 console.log('📁 Answer written to file.')
 
 if (args.includes('--open-md')) await generateMarkdownHtml(chatFile, fileContent + newBlock)
