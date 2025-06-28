@@ -3,6 +3,7 @@ import fsPromises from 'fs/promises'
 import path from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import { fileURLToPath } from 'url'
 import { generateMarkdownHtml } from './src/markdown.js'
 import { askQuestion, uploadFile, listFiles, deleteFile } from './src/ai.js'
 import { getQuestion, putAnswer } from './src/parser.js'
@@ -10,9 +11,14 @@ import { braveSearchToFile } from './src/brave.js'
 
 const execAsync = promisify(exec)
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8'))
+
 function showHelpAndExit() {
   console.log(`
 🤖 Assistant CLI Tool with Threads (OpenAI Assistants API)
+📦 Version: ${pkg.version}
 
 Usage:
   node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search]
