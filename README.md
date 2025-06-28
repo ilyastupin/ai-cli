@@ -1,67 +1,75 @@
-# ChatGPT CLI Tool
+# Assistant CLI Tool with Threads
 
 ## Overview
-The ChatGPT CLI Tool is a command-line interface designed for interacting with OpenAI's ChatGPT model. It allows users to engage with ChatGPT via markdown files, upload files for various uses, and list uploaded files with metadata. Additionally, it can render markdown to HTML on demand.
+The Assistant CLI Tool with Threads is a command-line interface for interacting with OpenAI's Assistants API. The tool supports threaded conversations, file uploads, integrated Brave search queries, and markdown rendering. It is designed for users looking to efficiently manage chat sessions and related file operations.
 
 ## Features
-- **Chat Functionality**: Engage with ChatGPT using markdown files.
-- **File Upload**: Upload files to OpenAI (e.g., for assistance).
-- **File Listing**: View metadata of uploaded files.
-- **Markdown Rendering**: Convert markdown content to HTML and open it in a browser.
+- **Chat Functionality**: Engage with an assistant using a markdown chat file. The tool supports continued conversations using embedded `thread_id`.
+- **File Upload**: Upload files to the Assistants API for various tasks.
+- **File Listing**: Retrieve and display metadata of uploaded files.
+- **Markdown Rendering**: Convert markdown content to HTML and optionally open it in a browser.
+- **Brave Search Integration**: Generate search query, perform Brave search, and attach results.
+- **Thread Support**: Manage conversations with thread context for seamless interactions.
 
 ## Installation
-Ensure Node.js is installed on your system. Then, install project dependencies using:
+Ensure Node.js is installed on your system. Install the project dependencies with:
 
 ```bash
 npm install
 ```
 
-This project uses the `openai` library to interface with the OpenAI API.
+This project utilizes several libraries, including `openai` for API interactions.
 
 ## Usage
-Use `chatGPT.js` to interact with the CLI tool. Several options are available:
+Execute `assistant.js` with various options to utilize different functionalities:
 
 ```bash
 Usage:
-  node chatGPT.js --chat <file.txt> [--open-md]
-  node chatGPT.js --upload <file>
-  node chatGPT.js --list
-  
+  node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search]
+  node assistant.js --upload <file>
+  node assistant.js --list
+
 Options:
-  --chat <file.txt>     Use a markdown chat file
-  --open-md             Post-conversation, render markdown to HTML and open it
-  --upload <file>       Upload a file to OpenAI Files API
-  --list                List all uploaded files with their metadata
+  --chat <file.txt>     Run assistant with chat file (thread continues via embedded thread_id)
+  --open-md             Render markdown to HTML and open following response
+  --use <ids>           Attach one or more uploaded file IDs (comma-separated)
+  --upload <file>       Upload a file (primarily for assistants)
+  --list                Display metadata of uploaded files
+  --search              Perform search and attach results to the chat
   --help                Display this usage message
 ```
 
-### Examples
-- To chat with GPT using a markdown file:
+## Examples
+- **Chat with Assistant**:
   ```bash
-  node chatGPT.js --chat session1.txt
+  node assistant.js --chat session1.txt
   ```
-- Upload a file for assistant usage:
+- **Upload a File**:
   ```bash
-  node chatGPT.js --upload data.json
+  node assistant.js --upload document.pdf
   ```
-- List all uploaded files:
+- **List Files**:
   ```bash
-  node chatGPT.js --list
+  node assistant.js --list
+  ```
+- **Perform a Search and Use Results**:
+  ```bash
+  node assistant.js --chat session1.txt --search
   ```
 
 ## License
 This project is licensed under the ISC License.
 
 ## Contributors
-Please refer to the `package.json` or accompanying project documentation for details about contributors. [Personalize this section as necessary.]
+Refer to `package.json` for details on contributors. Adjust this section to include specific contributors as necessary.
 
 ## Support
-For any issues or questions, check the help option within the CLI tool:
+For troubleshooting and further assistance, use the `--help` command:
 
 ```bash
-node chatGPT.js --help
+node assistant.js --help
 ```
 
 ---
 
-This updated README highlights the core functionalities, installation instructions, usage examples, and other essential information for users and developers interacting with the CLI tool. Adjust the Contributors section as needed to fit the specific contributors involved in your project.
+This README update incorporates all outlined functionalities of your CLI tool while maintaining clarity and detail for both developers and users who interact with it. Adjust the Contributors section according to the individuals involved in the project.
