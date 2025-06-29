@@ -8,7 +8,7 @@ import { generateMarkdownHtml } from './src/markdown.js'
 import { askQuestion, uploadFile, listFiles, deleteFile } from './src/ai.js'
 import { getQuestion, putAnswer, getLastAnswer } from './src/parser.js'
 import { braveSearchToFile } from './src/brave.js'
-import { runNamedScript } from './src/run.js'
+import { runCommand } from './src/run.js'
 
 const execAsync = promisify(exec)
 
@@ -37,8 +37,8 @@ Options:
   --upload <file>       Upload a file (purpose: assistants)
   --delete <file-id>    Delete a file by ID from OpenAI
   --list                List uploaded files
-  --search              Perform Brave search and attach results to assistant
   --run <name>          Run a script from ./commands (requires --chat)
+  --json                Output machine-readable JSON (for --upload, --delete, --list)
   --help                Show this message
 `)
   process.exit(0)
@@ -56,6 +56,7 @@ const runIndex = args.indexOf('--run')
 const searchEnabled = args.includes('--search')
 const showLastOnly = args.includes('--last')
 const removeMd = args.includes('--remove-md')
+const jsonOutput = args.includes('--json')
 
 // Parse multiple --use file IDs if present
 let fileIds = []
@@ -70,11 +71,15 @@ if (useIndex !== -1 && args[useIndex + 1]) {
 if (uploadIndex !== -1 && args[uploadIndex + 1]) {
   const filePath = path.resolve(args[uploadIndex + 1])
   const uploaded = await uploadFile(filePath)
-  console.log(`✅ Uploaded ${uploaded.name}`)
-  console.log(`  ID: ${uploaded.id}`)
-  console.log(`  Purpose: ${uploaded.purpose}`)
-  console.log(`  Size: ${uploaded.size} bytes`)
-  console.log(`  Created: ${uploaded.createdAt}`)
+  if (jsonOutput) {
+    console.log(JSON.stringify(uploaded, null, 2))
+  } else {
+    console.log(`✅ Uploaded ${uploaded.name}`)
+    console.log(`  ID: ${uploaded.id}`)
+    console.log(`  Purpose: ${uploaded.purpose}`)
+    console.log(`  Size: ${uploaded.size} bytes`)
+    console.log(`  Created: ${uploaded.createdAt}`)
+  }
   process.exit(0)
 }
 
@@ -82,10 +87,14 @@ if (uploadIndex !== -1 && args[uploadIndex + 1]) {
 if (deleteIndex !== -1 && args[deleteIndex + 1]) {
   const fileId = args[deleteIndex + 1]
   const result = await deleteFile(fileId)
-  if (result.deleted) {
-    console.log(`🗑️ Deleted file: ${fileId}`)
+  if (jsonOutput) {
+    console.log(JSON.stringify(result, null, 2))
   } else {
-    console.warn(`❌ Delete failed: ${result.error}`)
+    if (result.deleted) {
+      console.log(`🗑️ Deleted file: ${fileId}`)
+    } else {
+      console.warn(`❌ Delete failed: ${result.error}`)
+    }
   }
   process.exit(0)
 }
@@ -93,12 +102,16 @@ if (deleteIndex !== -1 && args[deleteIndex + 1]) {
 // --- List files
 if (args.includes('--list')) {
   const files = await listFiles()
-  for (const file of files) {
-    console.log(`📄 ${file.name}`)
-    console.log(`  ID: ${file.id}`)
-    console.log(`  Purpose: ${file.purpose}`)
-    console.log(`  Size: ${file.size} bytes`)
-    console.log(`  Created: ${file.createdAt}`)
+  if (jsonOutput) {
+    console.log(JSON.stringify(files, null, 2))
+  } else {
+    for (const file of files) {
+      console.log(`📄 ${file.name}`)
+      console.log(`  ID: ${file.id}`)
+      console.log(`  Purpose: ${file.purpose}`)
+      console.log(`  Size: ${file.size} bytes`)
+      console.log(`  Created: ${file.createdAt}`)
+    }
   }
   process.exit(0)
 }
@@ -111,7 +124,7 @@ const fileContent = await fsPromises.readFile(chatFile, 'utf8')
 // --- Run named script if requested
 if (runIndex !== -1 && args[runIndex + 1]) {
   const name = args[runIndex + 1]
-  await runNamedScript({ name, chatFile })
+  await runCommand({ name, chatFile })
   process.exit(0)
 }
 
