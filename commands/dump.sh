@@ -1,50 +1,51 @@
 #!/bin/bash
 
-# Defaults
-INCLUDE=("*.js" "*.jsx" "*.json" "*.ts" "*.tsx")
-EXCLUDE=()
 CONFIG_FILE="dump.config.json"
 OUTPUT_FILE="__archive__.md"
 
-# Load config if it exists
-if [ -f "$CONFIG_FILE" ]; then
-    echo "🔧 Loading config from $CONFIG_FILE"
-    INCLUDE=($(jq -r '.include[]?' "$CONFIG_FILE"))
-    EXCLUDE=($(jq -r '.exclude[]?' "$CONFIG_FILE"))
+# Step 1: Ensure config file exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "⚙️ Creating default $CONFIG_FILE..."
+    cat <<EOF >"$CONFIG_FILE"
+{
+  "include": ["*.js", "*.jsx", "*.json", "*.ts", "*.tsx"],
+  "exclude": ["^\\\\.vscode/", "package-lock\\\\.json"]
+}
+EOF
 fi
 
-# Clear output file
+# Step 2: Build INCLUDE and EXCLUDE regex
+INCLUDE_REGEX=$(jq -r '.include[]?' "$CONFIG_FILE" | sed 's/\./\\./g; s/\*/.*/g' | paste -sd '|' -)
+EXCLUDE_REGEX=$(jq -r '.exclude[]?' "$CONFIG_FILE" | paste -sd '|' -)
+
+echo "🔍 Include regex: $INCLUDE_REGEX"
+echo "🚫 Exclude regex: $EXCLUDE_REGEX"
+
+# Step 3: Clear previous archive file
 >"$OUTPUT_FILE"
 
-# Build the git ls-files command with include patterns
-MATCH_CMD="git ls-files"
-for pattern in "${INCLUDE[@]}"; do
-    MATCH_CMD+=" -- '$pattern'"
-done
+# Step 4: Process each file in git index
+echo "📦 Scanning files from git index..."
+FILE_COUNT=0
+MATCHED_COUNT=0
 
-# Debug output
-echo "📂 Include patterns: ${INCLUDE[*]}"
-echo "🚫 Exclude patterns: ${EXCLUDE[*]}"
-echo "🔍 Running: $MATCH_CMD"
+while read -r file; do
+    echo -n "📄 $file ... "
 
-# Evaluate match command
-MATCHED_FILES=$(eval "$MATCH_CMD")
-
-# Apply exclusions
-for pattern in "${EXCLUDE[@]}"; do
-    MATCHED_FILES=$(echo "$MATCHED_FILES" | grep -v -E "$pattern")
-done
-
-# Dump matched files to archive
-echo "📦 Archiving files to $OUTPUT_FILE..."
-
-COUNT=0
-while IFS= read -r file; do
-    if [ -f "$file" ]; then
-        echo -e "\n\n---\n### $file\n---\n" >>"$OUTPUT_FILE"
-        cat "$file" >>"$OUTPUT_FILE"
-        ((COUNT++))
+    if echo "$file" | grep -Eq "$INCLUDE_REGEX"; then
+        if echo "$file" | grep -Eq "$EXCLUDE_REGEX"; then
+            echo "🚫 excluded"
+        else
+            echo "✅ included"
+            echo -e "\n\n---\n### $file\n---\n" >>"$OUTPUT_FILE"
+            cat "$file" >>"$OUTPUT_FILE"
+            MATCHED_COUNT=$((MATCHED_COUNT + 1))
+        fi
+    else
+        echo "❌ skipped"
     fi
-done <<<"$MATCHED_FILES"
 
-echo "✅ Done: $OUTPUT_FILE created with $COUNT files."
+    FILE_COUNT=$((FILE_COUNT + 1))
+done < <(git ls-files)
+
+echo "✅ Done: $OUTPUT_FILE created with $MATCHED_COUNT of $FILE_COUNT files."

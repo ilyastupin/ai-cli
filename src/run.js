@@ -22,7 +22,7 @@ export async function runCommand(name, chatFilePath) {
   }
 
   await new Promise((resolve, reject) => {
-    const child = spawn('sh', [scriptPath, chatFilePath], {
+    const child = spawn('bash', [scriptPath, chatFilePath], {
       stdio: 'inherit'
     })
 
