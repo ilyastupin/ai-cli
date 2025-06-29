@@ -45,6 +45,7 @@ Usage:
   assistant --upload <file>
   assistant --delete <file-id>
   assistant --list
+  assistant --init <name>
 
 Options:
   --chat <file.txt>     Run assistant with chat file (thread continues via embedded thread_id)
@@ -56,8 +57,11 @@ Options:
   --delete <file-id>    Delete a file by ID from OpenAI
   --list                List uploaded files
   --run <name>          Run a script from ./commands (requires --chat)
+  --search              Perform a Brave search and attach results to the chat
   --json                Output machine-readable JSON (for --upload, --delete, --list)
   --help                Show this message
+
+Note: If no parameters are specified and a chat file is configured, it will use the current chat.
 ```
 
 ## Examples
@@ -89,4 +93,3 @@ For troubleshooting and further assistance, use the `--help` command:
 
 ```bash
 assistant --help
-```

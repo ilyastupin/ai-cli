@@ -54,21 +54,17 @@ Options:
 
 // Extract command-line arguments and check for '--help'
 const args = process.argv.slice(2)
-if (args.includes('--help') || args.length === 0) showHelpAndExit()
+if (args.includes('--help')) showHelpAndExit()
 
-// Determine indices for important flags in the command-line arguments
-const chatIndex = args.indexOf('--chat')
-const uploadIndex = args.indexOf('--upload')
-const deleteIndex = args.indexOf('--delete')
-const useIndex = args.indexOf('--use')
-const runIndex = args.indexOf('--run')
-const initIndex = args.indexOf('--init')
+// Set of valid command-line options
+const validOptions = new Set(['--chat', '--upload', '--delete', '--use', '--run', '--init', '--search', '--last', '--remove-md', '--open-md', '--json', '--help', '--list'])
 
-// Boolean flags to check certain command-line options
-const searchEnabled = args.includes('--search')
-const showLastOnly = args.includes('--last')
-const removeMd = args.includes('--remove-md')
-const jsonOutput = args.includes('--json')
+// Validate the arguments for invalid options
+const invalidOptions = args.filter(arg => arg.startsWith('--') && !validOptions.has(arg))
+if (invalidOptions.length > 0) {
+  console.error(`❌ Invalid options detected: ${invalidOptions.join(', ')}`)
+  showHelpAndExit()
+}
 
 // Load configuration file or handle errors
 let config = {}
@@ -85,11 +81,32 @@ try {
 }
 
 // Handle initialization of configuration with a provided name
+const initIndex = args.indexOf('--init')
 if (initIndex !== -1 && args[initIndex + 1]) {
   const name = args[initIndex + 1]
   await initConfig(name) // Wait for initialization to complete
   process.exit(0)
 }
+
+// Run the current chat if no parameters are provided but a chat is configured
+if (args.length === 0 && config.chatFile) {
+  args.push('--chat', config.chatFile)
+} else if (args.length === 0) {
+  showHelpAndExit()
+}
+
+// Determine indices for important flags in the command-line arguments
+const chatIndex = args.indexOf('--chat')
+const uploadIndex = args.indexOf('--upload')
+const deleteIndex = args.indexOf('--delete')
+const useIndex = args.indexOf('--use')
+const runIndex = args.indexOf('--run')
+
+// Boolean flags to check certain command-line options
+const searchEnabled = args.includes('--search')
+const showLastOnly = args.includes('--last')
+const removeMd = args.includes('--remove-md')
+const jsonOutput = args.includes('--json')
 
 // Determine the chat file to use, either from args or config
 let chatFile = chatIndex !== -1 && args[chatIndex + 1] ? args[chatIndex + 1] : config.chatFile
