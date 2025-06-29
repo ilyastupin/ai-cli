@@ -93,11 +93,12 @@ if (chatIndex !== -1 && (!args[chatIndex + 1] || args[chatIndex + 1].startsWith(
   showHelpAndExit()
 }
 
-// Handle initialization of configuration with a provided name
+// Asynchronous initialization without immediate exit
 if (initIndex !== -1 && args[initIndex + 1]) {
   const name = args[initIndex + 1]
-  await initConfig(name)
-  process.exit(0)
+  initConfig(name).catch(err => {
+    console.error(`❌ Configuration initialization failed: ${err.message}`)
+  })
 }
 
 // Run the current chat if no parameters are provided but a chat is configured
@@ -129,7 +130,9 @@ if (!chatFile) {
 
 // Update the chat file path in configuration if a new one is specified
 if (chatIndex !== -1 && args[chatIndex + 1]) {
-  await updateChatFileConfig(chatFile)
+  updateChatFileConfig(chatFile).catch(err => {
+    console.error(`❌ Failed to update chat file config: ${err.message}`)
+  })
 }
 
 // Resolve the full path to the chat file
@@ -147,50 +150,68 @@ if (useIndex !== -1 && args[useIndex + 1]) {
 // Handle file uploads
 if (uploadIndex !== -1 && args[uploadIndex + 1]) {
   const filePath = path.resolve(args[uploadIndex + 1])
-  const uploaded = await uploadFile(filePath)
-  if (jsonOutput) {
-    console.log(JSON.stringify(uploaded, null, 2))
-  } else {
-    console.log(`✅ Uploaded ${uploaded.name}`)
-    console.log(`  ID: ${uploaded.id}`)
-    console.log(`  Purpose: ${uploaded.purpose}`)
-    console.log(`  Size: ${uploaded.size} bytes`)
-    console.log(`  Created: ${uploaded.createdAt}`)
-  }
-  process.exit(0)
+  uploadFile(filePath)
+    .then(uploaded => {
+      if (jsonOutput) {
+        console.log(JSON.stringify(uploaded, null, 2))
+      } else {
+        console.log(`✅ Uploaded ${uploaded.name}`)
+        console.log(`  ID: ${uploaded.id}`)
+        console.log(`  Purpose: ${uploaded.purpose}`)
+        console.log(`  Size: ${uploaded.size} bytes`)
+        console.log(`  Created: ${uploaded.createdAt}`)
+      }
+      process.exit(0)
+    })
+    .catch(err => {
+      console.error(`❌ Upload failed: ${err.message}`)
+      process.exit(1)
+    })
 }
 
 // Handle file deletion
 if (deleteIndex !== -1 && args[deleteIndex + 1]) {
   const fileId = args[deleteIndex + 1]
-  const result = await deleteFile(fileId)
-  if (jsonOutput) {
-    console.log(JSON.stringify(result, null, 2))
-  } else {
-    if (result.deleted) {
-      console.log(`🗑️ Deleted file: ${fileId}`)
-    } else {
-      console.warn(`❌ Delete failed: ${result.error}`)
-    }
-  }
-  process.exit(0)
+  deleteFile(fileId)
+    .then(result => {
+      if (jsonOutput) {
+        console.log(JSON.stringify(result, null, 2))
+      } else {
+        if (result.deleted) {
+          console.log(`🗑️ Deleted file: ${fileId}`)
+        } else {
+          console.warn(`❌ Delete failed: ${result.error}`)
+        }
+      }
+      process.exit(0)
+    })
+    .catch(err => {
+      console.error(`❌ Delete operation failed: ${err.message}`)
+      process.exit(1)
+    })
 }
 
 // List files currently uploaded
 if (args.includes('--list')) {
-  const files = await listFiles()
-  if (jsonOutput) {
-    console.log(JSON.stringify(files, null, 2))
-  } else {
-    for (const file of files) {
-      console.log(`📄 ${file.name}`)
-      console.log(`  ID: ${file.id}`)
-      console.log(`  Purpose: ${file.purpose}`)
-      console.log(`  Size: ${file.size} bytes`)
-      console.log(`  Created: ${file.createdAt}`)
-    }
-  }
-  process.exit(0)
+  listFiles()
+    .then(files => {
+      if (jsonOutput) {
+        console.log(JSON.stringify(files, null, 2))
+      } else {
+        for (const file of files) {
+          console.log(`📄 ${file.name}`)
+          console.log(`  ID: ${file.id}`)
+          console.log(`  Purpose: ${file.purpose}`)
+          console.log(`  Size: ${file.size} bytes`)
+          console.log(`  Created: ${file.createdAt}`)
+        }
+      }
+      process.exit(0)
+    })
+    .catch(err => {
+      console.error(`❌ Listing files failed: ${err.message}`)
+      process.exit(1)
+    })
 }
 
 // Try to read the content of the specified chat file
