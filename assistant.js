@@ -8,6 +8,7 @@ import { generateMarkdownHtml } from './src/markdown.js'
 import { askQuestion, uploadFile, listFiles, deleteFile } from './src/ai.js'
 import { getQuestion, putAnswer, getLastAnswer } from './src/parser.js'
 import { braveSearchToFile } from './src/brave.js'
+import { runNamedScript } from './src/run.js'
 
 const execAsync = promisify(exec)
 
@@ -22,6 +23,7 @@ function showHelpAndExit() {
 
 Usage:
   node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search] [--last] [--remove-md]
+  node assistant.js --run <script> --chat <file.txt>
   node assistant.js --upload <file>
   node assistant.js --delete <file-id>
   node assistant.js --list
@@ -36,6 +38,7 @@ Options:
   --delete <file-id>    Delete a file by ID from OpenAI
   --list                List uploaded files
   --search              Perform Brave search and attach results to assistant
+  --run <name>          Run a script from ./commands (requires --chat)
   --help                Show this message
 `)
   process.exit(0)
@@ -48,6 +51,8 @@ const chatIndex = args.indexOf('--chat')
 const uploadIndex = args.indexOf('--upload')
 const deleteIndex = args.indexOf('--delete')
 const useIndex = args.indexOf('--use')
+const runIndex = args.indexOf('--run')
+
 const searchEnabled = args.includes('--search')
 const showLastOnly = args.includes('--last')
 const removeMd = args.includes('--remove-md')
@@ -98,19 +103,26 @@ if (args.includes('--list')) {
   process.exit(0)
 }
 
-// --- Chat file required
+// --- Chat file required from here on
 if (chatIndex === -1 || !args[chatIndex + 1]) showHelpAndExit()
 const chatFile = path.resolve(args[chatIndex + 1])
 const fileContent = await fsPromises.readFile(chatFile, 'utf8')
 
-// --- Show last answer only (possibly with --remove-md)
+// --- Run named script if requested
+if (runIndex !== -1 && args[runIndex + 1]) {
+  const name = args[runIndex + 1]
+  await runNamedScript({ name, chatFile })
+  process.exit(0)
+}
+
+// --- Show last assistant answer
 if (showLastOnly) {
   const lastAnswer = getLastAnswer(fileContent, removeMd)
   if (lastAnswer) process.stdout.write(lastAnswer.trim() + '\n')
   process.exit(0)
 }
 
-// --- Parse next question
+// --- Ask assistant next question
 const { remainder, lastThreadId, lastAnswerIndex } = getQuestion(fileContent)
 if (!remainder) {
   console.log('✅ No new question found after last answer.')
@@ -118,7 +130,7 @@ if (!remainder) {
   process.exit(0)
 }
 
-// --- If search is enabled, ask what to search
+// --- Optional Brave search integration
 if (searchEnabled) {
   console.log('🔍 Asking assistant how to phrase Brave search...')
   const { answer: searchQuery } = await askQuestion({
@@ -152,7 +164,7 @@ const { answer, threadId } = await askQuestion({
   threadId: lastThreadId
 })
 
-// Remove Brave-style reference markers from response
+// Remove Brave-style reference markers
 const cleanAnswer = answer.replace(/【\d+:\d+†.*?】/g, '')
 await putAnswer(chatFile, cleanAnswer, threadId, lastAnswerIndex)
 
