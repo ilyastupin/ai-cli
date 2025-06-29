@@ -33,6 +33,9 @@ Now I tell you file name and you show me its full content.
 I expect file content only
 
 Give me $line
+
+The current file is:
+$(cat $line)
 " >>"$CHAT_FILE"
 
     assistant --chat "$CHAT_FILE"

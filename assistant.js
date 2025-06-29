@@ -119,7 +119,20 @@ if (args.includes('--list')) {
 // --- Chat file required from here on
 if (chatIndex === -1 || !args[chatIndex + 1]) showHelpAndExit()
 const chatFile = path.resolve(args[chatIndex + 1])
-const fileContent = await fsPromises.readFile(chatFile, 'utf8')
+
+let fileContent = ''
+try {
+  fileContent = await fsPromises.readFile(chatFile, 'utf8')
+} catch (err) {
+  if (err.code === 'ENOENT') {
+    console.warn(`⚠️ Chat file not found. Creating empty file: ${chatFile}`)
+    await fsPromises.mkdir(path.dirname(chatFile), { recursive: true })
+    await fsPromises.writeFile(chatFile, '')
+    fileContent = ''
+  } else {
+    throw err
+  }
+}
 
 // --- Run named script if requested
 if (runIndex !== -1 && args[runIndex + 1]) {
