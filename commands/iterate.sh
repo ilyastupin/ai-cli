@@ -22,19 +22,25 @@ echo 'making a file list...'
 echo '
 In last question I asked you to make some changes.
 
-I am ready to do it.
+I want to save this changes locally.
 
-show me a list of files that I supposed to create or update (in a context of last question and your answer). 
+show me a list of files that I supposed to create or update in my file system manually
+(in a context of last question and your answer). 
 
-Show me text files only (no images or ico files).
+Show me text file names only (no images or ico files).
+
+It must be real files that I can find on the disk. Dont include any files with template in names.
 
 I need a bare list with full paths - no other words
+
 ' >>"$CHAT_FILE"
 
 eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
 
 # Extract assistant's last answer excluding first and last lines
-assistant --chat "$CHAT_FILE" --last | tail -n +2 | head -n $(($(assistant --chat "$CHAT_FILE" --last | wc -l) - 2)) >tmp/list.txt
+# assistant --chat "$CHAT_FILE" --last | tail -n +2 | head -n $(($(assistant --chat "$CHAT_FILE" --last | wc -l) - 2)) >tmp/list.txt
+
+assistant --chat "$CHAT_FILE" --last >tmp/list.txt
 
 echo 'the file list is:'
 cat tmp/list.txt
