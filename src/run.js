@@ -43,12 +43,16 @@ export async function runCommand(input, chatFilePath = '') {
 
     child.on('exit', (code) => {
       if (code !== 0) {
-        reject(new Error(`Script exited with code ${code}`))
+        console.error(`❌ Script ${name}.sh exited with code ${code}. Please check the script and try again.`)
+        reject()
       } else {
         resolve()
       }
     })
 
-    child.on('error', reject)
+    child.on('error', (err) => {
+      console.error(`❌ Error executing script: ${err.message}`)
+      reject()
+    })
   })
 }

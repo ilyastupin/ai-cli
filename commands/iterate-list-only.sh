@@ -18,6 +18,11 @@ fi
 
 mkdir -p tmp
 
+# Check for new questions
+if ! assistant --chat "$CHAT_FILE" --check; then
+    exit 1
+fi
+
 echo 'making a file list...'
 echo '
 

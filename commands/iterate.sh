@@ -18,6 +18,11 @@ fi
 
 mkdir -p tmp
 
+# Check for new questions
+if ! assistant --chat "$CHAT_FILE" --check; then
+    exit 1
+fi
+
 echo '
 make me a good message for this changes to commit them into repository
 I want you to show only single line of future commit message
