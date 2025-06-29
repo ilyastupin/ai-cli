@@ -1,7 +1,22 @@
 import fsPromises from 'fs/promises'
 import path from 'path'
+import * as fs from 'fs'
 
 const CONFIG_FILE = 'assistant.config.json'
+
+// Helper to ensure atomic writes by using a write lock
+async function safeWriteFile(filePath, data) {
+  return new Promise((resolve, reject) => {
+    const tempPath = filePath + '.tmp'
+    fs.writeFile(tempPath, data, (err) => {
+      if (err) return reject(err)
+      fs.rename(tempPath, filePath, (err) => {
+        if (err) return reject(err)
+        resolve()
+      })
+    })
+  })
+}
 
 // Initialize the configuration with a given name
 export async function initConfig(name) {
@@ -29,7 +44,7 @@ export async function initConfig(name) {
       }
     }
 
-    await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+    await safeWriteFile(configPath, JSON.stringify(config, null, 2))
     console.log(`✅ Configuration updated with name: ${name}`)
   } catch (error) {
     console.error(`❌ Error updating config file: ${error.message}`)
@@ -53,7 +68,7 @@ export async function updateChatFileConfig(chatFilePath) {
     // Always store relative paths for chat files
     config.chatFile = path.relative(process.cwd(), chatFilePath)
 
-    await fsPromises.writeFile(configPath, JSON.stringify(config, null, 2))
+    await safeWriteFile(configPath, JSON.stringify(config, null, 2))
   } catch (error) {
     console.error(`❌ Error updating chat file in config: ${error.message}`)
   }
