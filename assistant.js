@@ -38,6 +38,7 @@ Options:
   --delete <file-id>    Delete a file by ID from OpenAI
   --list                List uploaded files
   --run <name>          Run a script from ./commands (requires --chat)
+  --search              Perform a Brave search and attach results to the chat
   --json                Output machine-readable JSON (for --upload, --delete, --list)
   --help                Show this message
 `)

@@ -1,5 +1,5 @@
 import fs from 'fs/promises'
-import removeMd from 'remove-markdown'
+import { stripAnswer } from './stripper.js'
 
 /**
  * Extracts the next unanswered question and metadata from the chat file content.
@@ -33,7 +33,7 @@ export async function putAnswer(chatFilePath, answer, threadId, lastAnswerIndex)
 
 /**
  * Returns the last assistant answer found in the file.
- * Optionally strips markdown formatting.
+ * Optionally strips markdown formatting using custom logic.
  * @param {string} fileContent
  * @param {boolean} stripMarkdown
  * @returns {string|null}
@@ -44,5 +44,5 @@ export function getLastAnswer(fileContent, stripMarkdown = false) {
   for (const match of fileContent.matchAll(answerBlockRegex)) lastMatch = match
   if (!lastMatch) return null
   const rawAnswer = lastMatch[2]
-  return stripMarkdown ? removeMd(rawAnswer) : rawAnswer
+  return stripMarkdown ? stripAnswer(rawAnswer) : rawAnswer
 }

@@ -14,7 +14,6 @@
   "dependencies": {
     "jsdom": "^26.1.0",
     "node-fetch": "^3.3.2",
-    "openai": "^5.8.2",
-    "remove-markdown": "^0.6.2"
+    "openai": "^5.8.2"
   }
 }
