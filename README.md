@@ -1,6 +1,3 @@
-# Assistant CLI Tool with Threads
-
-## Overview
 The Assistant CLI Tool with Threads is a command-line interface for interacting with OpenAI's Assistants API. The tool supports threaded conversations, file uploads, integrated Brave search queries, and markdown rendering. It is designed for users looking to efficiently manage chat sessions and related file operations.
 
 ## Features
@@ -12,13 +9,31 @@ The Assistant CLI Tool with Threads is a command-line interface for interacting 
 - **Thread Support**: Manage conversations with thread context for seamless interactions.
 
 ## Installation
-Ensure Node.js is installed on your system. Install the project dependencies with:
+To get started with the Assistant CLI Tool, follow these steps:
 
-```bash
-npm install
-```
+1. **Clone the Repository**:
+   Create a new folder and clone the public repository:
+   ```bash
+   git clone https://github.com/ilyastupin/ai-cli
+   cd ai-cli
+   ```
 
-This project utilizes several libraries, including `openai` for API interactions.
+2. **Install Node.js v22**:
+   Ensure Node.js version 22 is installed. You can find the installation guide [here](https://nodejs.org/).
+
+3. **Install Dependencies**:
+   Run npm to install project dependencies:
+   ```bash
+   npm install
+   ```
+
+4. **Link the Tool**:
+   For global access, link the package:
+   ```bash
+   npm link
+   ```
+
+   **Note**: This tool has been tested for Mac users only.
 
 ## Usage
 Execute `assistant.js` with various options to utilize different functionalities:
@@ -68,8 +83,3 @@ For troubleshooting and further assistance, use the `--help` command:
 
 ```bash
 node assistant.js --help
-```
-
----
-
-This README update incorporates all outlined functionalities of your CLI tool while maintaining clarity and detail for both developers and users who interact with it. Adjust the Contributors section according to the individuals involved in the project.

@@ -20,16 +20,17 @@ mkdir -p tmp
 
 echo 'making a file list...'
 echo '
-In last question I asked you to make some changes.
 
 I want to save this changes locally.
 
 show me a list of files that I supposed to create or update in my file system manually
-(in a context of last question and your answer). 
+(that I just asked you about to change). 
 
 Show me text file names only (no images or ico files).
 
 It must be real files that I can find on the disk. Dont include any files with template in names.
+
+Dont include ANY additional formatting like markdown or bullets. I need ONLY file content.
 
 I need a bare list with full paths - no other words
 
@@ -45,7 +46,7 @@ assistant --chat "$CHAT_FILE" --last >tmp/list.txt
 echo 'the file list is:'
 cat tmp/list.txt
 
-cat tmp/list.txt | while read -r line; do
+cat tmp/list.txt | grep -v '```' | while read -r line; do
     echo "
 Now I tell you file name and you show me its full content.
 
