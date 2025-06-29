@@ -9,6 +9,7 @@ import { askQuestion, uploadFile, listFiles, deleteFile } from './src/ai.js'
 import { getQuestion, putAnswer, getLastAnswer } from './src/parser.js'
 import { braveSearchToFile } from './src/brave.js'
 import { runCommand } from './src/run.js'
+import { initConfig } from './src/init.js'
 
 const execAsync = promisify(exec)
 
@@ -27,6 +28,7 @@ Usage:
   assistant --upload <file>
   assistant --delete <file-id>
   assistant --list
+  assistant --init <name>
 
 Options:
   --chat <file.txt>     Run assistant with chat file (thread continues via embedded thread_id)
@@ -39,6 +41,7 @@ Options:
   --list                List uploaded files
   --run <name>          Run a script from ./commands (requires --chat)
   --search              Perform a Brave search and attach results to the chat
+  --init <name>         Initialize the assistant configuration file with the given name
   --json                Output machine-readable JSON (for --upload, --delete, --list)
   --help                Show this message
 `)
@@ -53,11 +56,19 @@ const uploadIndex = args.indexOf('--upload')
 const deleteIndex = args.indexOf('--delete')
 const useIndex = args.indexOf('--use')
 const runIndex = args.indexOf('--run')
+const initIndex = args.indexOf('--init')
 
 const searchEnabled = args.includes('--search')
 const showLastOnly = args.includes('--last')
 const removeMd = args.includes('--remove-md')
 const jsonOutput = args.includes('--json')
+
+// Configuration initialization
+if (initIndex !== -1 && args[initIndex + 1]) {
+  const name = args[initIndex + 1]
+  await initConfig(name)  // Await to ensure completion before exit
+  process.exit(0)
+}
 
 // Parse multiple --use file IDs if present
 let fileIds = []

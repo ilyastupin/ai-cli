@@ -1,22 +1,17 @@
 #!/bin/bash
 
-CONFIG_FILE="dump.config.json"
+CONFIG_FILE="assistant.config.json"
 OUTPUT_FILE="__archive__.md"
 
 # Step 1: Ensure config file exists
 if [ ! -f "$CONFIG_FILE" ]; then
-    echo "⚙️ Creating default $CONFIG_FILE..."
-    cat <<EOF >"$CONFIG_FILE"
-{
-  "include": ["*.js", "*.jsx", "*.json", "*.ts", "*.tsx"],
-  "exclude": ["^\\\\.vscode/", "package-lock\\\\.json"]
-}
-EOF
+    echo "❌ Error: Config file $CONFIG_FILE not found!"
+    exit 1
 fi
 
 # Step 2: Build INCLUDE and EXCLUDE regex
-INCLUDE_REGEX=$(jq -r '.include[]?' "$CONFIG_FILE" | sed 's/\./\\./g; s/\*/.*/g' | paste -sd '|' -)
-EXCLUDE_REGEX=$(jq -r '.exclude[]?' "$CONFIG_FILE" | paste -sd '|' -)
+INCLUDE_REGEX=$(jq -r '.dump.include[]?' "$CONFIG_FILE" | sed 's/\./\\./g; s/\*/.*/g' | paste -sd '|' -)
+EXCLUDE_REGEX=$(jq -r '.dump.exclude[]?' "$CONFIG_FILE" | paste -sd '|' -)
 
 echo "🔍 Include regex: $INCLUDE_REGEX"
 echo "🚫 Exclude regex: $EXCLUDE_REGEX"

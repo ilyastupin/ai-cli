@@ -38,10 +38,7 @@ I need a bare list with full paths - no other words
 
 eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
 
-# Extract assistant's last answer excluding first and last lines
-# assistant --chat "$CHAT_FILE" --last | tail -n +2 | head -n $(($(assistant --chat "$CHAT_FILE" --last | wc -l) - 2)) >tmp/list.txt
-
-assistant --chat "$CHAT_FILE" --last >tmp/list.txt
+assistant --chat "$CHAT_FILE" --last --remove-md >tmp/list.txt
 
 echo 'the file list is:'
 cat tmp/list.txt

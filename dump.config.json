@@ -1,4 +1,0 @@
-{
-  "include": ["*.js", "*.jsx", "*.json", "*.ts", "*.tsx"],
-  "exclude": ["^\\.vscode/", "package-lock\\.json"]
-}
