@@ -18,20 +18,20 @@ fi
 
 mkdir -p tmp
 
-echo 'making a file list...'
-
-eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
-
 echo '
 make me a good message for this changes to commit them into repository
 I want you to show only single line of future commit message
 Dont include ANY additional formatting like markdown or bullets.
 ' >>"$CHAT_FILE"
 
+eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
+
 assistant --chat "$CHAT_FILE" --last --remove-md >tmp/commit.txt
 
 echo 'commit message:'
 cat tmp/commit.txt
+
+echo 'making a file list...'
 
 echo '
 
