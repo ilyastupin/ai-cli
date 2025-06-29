@@ -81,7 +81,7 @@ if (initIndex !== -1 && args[initIndex + 1]) {
   process.exit(0)
 }
 
-let chatFile = args[chatIndex + 1] || config.chatFile
+let chatFile = chatIndex !== -1 && args[chatIndex + 1] ? args[chatIndex + 1] : config.chatFile
 if (!chatFile) {
   console.error(`❌ Chat file must be specified using --chat or configured in assistant.config.json`)
   showHelpAndExit()
