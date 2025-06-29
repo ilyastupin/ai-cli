@@ -19,6 +19,20 @@ fi
 mkdir -p tmp
 
 echo 'making a file list...'
+
+eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
+
+echo '
+make me a good message for this changes to commit them into repository
+I want you to show only single line of future commit message
+Dont include ANY additional formatting like markdown or bullets.
+' >>"$CHAT_FILE"
+
+assistant --chat "$CHAT_FILE" --last --remove-md >tmp/commit.txt
+
+echo 'commit message:'
+cat tmp/commit.txt
+
 echo '
 
 I want to save this changes locally.
@@ -35,8 +49,6 @@ Dont include ANY additional formatting like markdown or bullets. I need ONLY fil
 I need a bare list with full paths - no other words
 
 ' >>"$CHAT_FILE"
-
-eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
 
 assistant --chat "$CHAT_FILE" --last --remove-md >tmp/list.txt
 
@@ -60,3 +72,6 @@ $(cat "$line" 2>/dev/null || true)
     mkdir -p "$(dirname "$line")"
     cp tmp/file.txt "$line"
 done
+
+git add .
+git commit -m $(cat tmp/commit.txt)
