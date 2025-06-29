@@ -1,5 +1,5 @@
-import fs from 'fs'
 import fsPromises from 'fs/promises'
+import fs from 'fs'
 import path from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
@@ -22,11 +22,11 @@ function showHelpAndExit() {
 📦 Version: ${pkg.version}
 
 Usage:
-  node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search] [--last] [--remove-md]
-  node assistant.js --run <script> --chat <file.txt>
-  node assistant.js --upload <file>
-  node assistant.js --delete <file-id>
-  node assistant.js --list
+  assistant --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search] [--last] [--remove-md]
+  assistant --run <script> --chat <file.txt>
+  assistant --upload <file>
+  assistant --delete <file-id>
+  assistant --list
 
 Options:
   --chat <file.txt>     Run assistant with chat file (thread continues via embedded thread_id)

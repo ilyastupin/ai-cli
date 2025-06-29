@@ -59,7 +59,7 @@ $(cat "$line" 2>/dev/null || true)
 " >>"$CHAT_FILE"
 
     eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
-    assistant --chat "$CHAT_FILE" --last | tail -n +2 | head -n $(($(assistant --chat "$CHAT_FILE" --last | wc -l) - 2)) >tmp/file.txt
+    assistant --chat "$CHAT_FILE" --last >tmp/file.txt
     mkdir -p "$(dirname "$line")"
     cp tmp/file.txt "$line"
 done
