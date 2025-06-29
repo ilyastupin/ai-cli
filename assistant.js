@@ -71,22 +71,32 @@ if (invalidOptions.length > 0) {
 // Load configuration file or handle errors
 let config = {}
 try {
-  // Attempt to load the config file
   const configContent = await fsPromises.readFile('assistant.config.json', 'utf8')
   config = JSON.parse(configContent)
 } catch (err) {
   if (err.code !== 'ENOENT') {
-    // Log and exit if there was a problem other than a missing file
     console.error(`❌ Failed to load configuration: ${err.message}`)
     process.exit(1)
   }
 }
 
-// Handle initialization of configuration with a provided name
+// Ensure '--init' and '--chat' options are followed by their respective parameters
 const initIndex = args.indexOf('--init')
+if (initIndex !== -1 && (!args[initIndex + 1] || args[initIndex + 1].startsWith('--'))) {
+  console.error('❌ --init must be followed by a name.')
+  showHelpAndExit()
+}
+
+const chatIndex = args.indexOf('--chat')
+if (chatIndex !== -1 && (!args[chatIndex + 1] || args[chatIndex + 1].startsWith('--'))) {
+  console.error('❌ --chat must be followed by a file path.')
+  showHelpAndExit()
+}
+
+// Handle initialization of configuration with a provided name
 if (initIndex !== -1 && args[initIndex + 1]) {
   const name = args[initIndex + 1]
-  await initConfig(name) // Wait for initialization to complete
+  await initConfig(name)
   process.exit(0)
 }
 
@@ -98,7 +108,6 @@ if (args.length === 0 && config.chatFile) {
 }
 
 // Determine indices for important flags in the command-line arguments
-const chatIndex = args.indexOf('--chat')
 const uploadIndex = args.indexOf('--upload')
 const deleteIndex = args.indexOf('--delete')
 const useIndex = args.indexOf('--use')
@@ -114,7 +123,6 @@ const checkOnly = args.includes('--check')
 // Determine the chat file to use, either from args or config
 let chatFile = chatIndex !== -1 && args[chatIndex + 1] ? args[chatIndex + 1] : config.chatFile
 if (!chatFile) {
-  // Error if no chat file is specified
   console.error(`❌ Chat file must be specified using --chat or configured in assistant.config.json`)
   showHelpAndExit()
 }
@@ -212,10 +220,10 @@ if (checkOnly) {
   const { remainder } = getQuestion(fileContent)
   if (!remainder) {
     console.log('❌ No new question found.')
-    process.exit(1) // Exit with error if no new question
+    process.exit(1)
   } else {
     console.log('✅ New question detected.')
-    process.exit(0) // Exit successfully if there's a new question
+    process.exit(0)
   }
 }
 
