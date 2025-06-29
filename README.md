@@ -36,40 +36,46 @@ To get started with the Assistant CLI Tool, follow these steps:
    **Note**: This tool has been tested for Mac users only.
 
 ## Usage
-Execute `assistant.js` with various options to utilize different functionalities:
+Execute `assistant` with various options to utilize different functionalities:
 
-```bash
+```
 Usage:
-  node assistant.js --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search]
-  node assistant.js --upload <file>
-  node assistant.js --list
+  assistant --chat <file.txt> [--open-md] [--use <file-id1,file-id2,...>] [--search] [--last] [--remove-md]
+  assistant --run <script> --chat <file.txt>
+  assistant --upload <file>
+  assistant --delete <file-id>
+  assistant --list
 
 Options:
   --chat <file.txt>     Run assistant with chat file (thread continues via embedded thread_id)
-  --open-md             Render markdown to HTML and open following response
+  --last                Show the last assistant response and exit
+  --remove-md           Strip markdown from last response (only used with --last)
+  --open-md             Render markdown to HTML and open after answering
   --use <ids>           Attach one or more uploaded file IDs (comma-separated)
-  --upload <file>       Upload a file (primarily for assistants)
-  --list                Display metadata of uploaded files
-  --search              Perform search and attach results to the chat
-  --help                Display this usage message
+  --upload <file>       Upload a file (purpose: assistants)
+  --delete <file-id>    Delete a file by ID from OpenAI
+  --list                List uploaded files
+  --run <name>          Run a script from ./commands (requires --chat)
+  --json                Output machine-readable JSON (for --upload, --delete, --list)
+  --help                Show this message
 ```
 
 ## Examples
 - **Chat with Assistant**:
   ```bash
-  node assistant.js --chat session1.txt
+  assistant --chat session1.txt
   ```
 - **Upload a File**:
   ```bash
-  node assistant.js --upload document.pdf
+  assistant --upload document.pdf
   ```
 - **List Files**:
   ```bash
-  node assistant.js --list
+  assistant --list
   ```
 - **Perform a Search and Use Results**:
   ```bash
-  node assistant.js --chat session1.txt --search
+  assistant --chat session1.txt --search
   ```
 
 ## License
@@ -82,4 +88,5 @@ Refer to `package.json` for details on contributors. Adjust this section to incl
 For troubleshooting and further assistance, use the `--help` command:
 
 ```bash
-node assistant.js --help
+assistant --help
+```
