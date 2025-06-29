@@ -9,7 +9,7 @@ import { askQuestion, uploadFile, listFiles, deleteFile } from './src/ai.js'
 import { getQuestion, putAnswer, getLastAnswer } from './src/parser.js'
 import { braveSearchToFile } from './src/brave.js'
 import { runCommand } from './src/run.js'
-import { initConfig } from './src/init.js'
+import { initConfig, updateChatFileConfig } from './src/init.js'
 
 const execAsync = promisify(exec)
 
@@ -63,12 +63,35 @@ const showLastOnly = args.includes('--last')
 const removeMd = args.includes('--remove-md')
 const jsonOutput = args.includes('--json')
 
+let config = {}
+try {
+  const configContent = await fsPromises.readFile('assistant.config.json', 'utf8')
+  config = JSON.parse(configContent)
+} catch (err) {
+  if (err.code !== 'ENOENT') {
+    console.error(`❌ Failed to load configuration: ${err.message}`)
+    process.exit(1)
+  }
+}
+
 // Configuration initialization
 if (initIndex !== -1 && args[initIndex + 1]) {
   const name = args[initIndex + 1]
-  await initConfig(name)  // Await to ensure completion before exit
+  await initConfig(name)
   process.exit(0)
 }
+
+let chatFile = args[chatIndex + 1] || config.chatFile
+if (!chatFile) {
+  console.error(`❌ Chat file must be specified using --chat or configured in assistant.config.json`)
+  showHelpAndExit()
+}
+
+if (chatIndex !== -1 && args[chatIndex + 1]) {
+  await updateChatFileConfig(chatFile)
+}
+
+chatFile = path.resolve(chatFile)
 
 // Parse multiple --use file IDs if present
 let fileIds = []
@@ -127,10 +150,6 @@ if (args.includes('--list')) {
   }
   process.exit(0)
 }
-
-// --- Chat file required from here on
-if (chatIndex === -1 || !args[chatIndex + 1]) showHelpAndExit()
-const chatFile = path.resolve(args[chatIndex + 1])
 
 let fileContent = ''
 try {
