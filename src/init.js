@@ -45,8 +45,9 @@ export async function initConfig(name) {
       }
     }
 
-    await safeWriteFile(configPath, JSON.stringify(config, null, 2))
-    console.log(`✅ Configuration updated with name: ${name}`)
+    await safeWriteFile(configPath, JSON.stringify(config, null, 2)).finally(() => {
+      console.log(`✅ Configuration updated with name: ${name}`)
+    })
   } catch (error) {
     console.error(`❌ Error updating config file: ${error.message}`)
   }
@@ -69,7 +70,9 @@ export async function updateChatFileConfig(chatFilePath) {
     // Always store relative paths for chat files
     config.chatFile = path.relative(process.cwd(), chatFilePath)
 
-    await safeWriteFile(configPath, JSON.stringify(config, null, 2))
+    await safeWriteFile(configPath, JSON.stringify(config, null, 2)).finally(() => {
+      console.log(`✅ Chat file path updated in configuration: ${chatFilePath}`)
+    })
   } catch (error) {
     console.error(`❌ Error updating chat file in config: ${error.message}`)
   }
