@@ -8,10 +8,20 @@ const __dirname = path.dirname(__filename)
 
 /**
  * Runs a shell script from the `commands/` folder.
- * @param {string} name - The name of the script (without extension)
- * @param {string} chatFilePath - Absolute path to the chat file (passed as first arg)
+ * @param {string|object} input - The script name as a string, or an object with name, chatFile, and optional fileIds
+ * @param {string} [chatFilePath] - Absolute path to the chat file (deprecated, use object input instead)
  */
-export async function runCommand(name, chatFilePath) {
+export async function runCommand(input, chatFilePath = '') {
+  let name, chatFile, fileIds
+
+  if (typeof input === 'string') {
+    name = input
+    chatFile = chatFilePath
+    fileIds = null
+  } else {
+    ;({ name, chatFile, fileIds } = input)
+  }
+
   const scriptPath = path.resolve(__dirname, `../commands/${name}.sh`)
 
   try {
@@ -21,8 +31,13 @@ export async function runCommand(name, chatFilePath) {
     process.exit(1)
   }
 
+  const args = [scriptPath, chatFile]
+  if (fileIds) {
+    args.push(fileIds)
+  }
+
   await new Promise((resolve, reject) => {
-    const child = spawn('bash', [scriptPath, chatFilePath], {
+    const child = spawn('bash', args, {
       stdio: 'inherit'
     })
 

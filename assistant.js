@@ -137,7 +137,7 @@ try {
 // --- Run named script if requested
 if (runIndex !== -1 && args[runIndex + 1]) {
   const name = args[runIndex + 1]
-  await runCommand(name, chatFile)
+  await runCommand({ name, chatFile, fileIds: fileIds.length ? fileIds.join(',') : null })
   process.exit(0)
 }
 

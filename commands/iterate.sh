@@ -8,17 +8,30 @@ if [ -z "$1" ]; then
 fi
 
 CHAT_FILE="$1"
+USE_IDS="${2:-}"
+
+USE_ARGS=""
+if [ -n "$USE_IDS" ]; then
+    USE_ARGS="--use $USE_IDS"
+    echo "📎 Using attached file IDs: $USE_IDS"
+fi
+
 mkdir -p tmp
 
 echo 'making a file list...'
 echo '
-show me a list of files that I supposed to create or update. Show me text files only (no images or ico files).
+In last question I asked you to make some changes.
 
-I am already inside a future application folder so do not add root folder name like my-remix-app/...
+I am ready to do it.
+
+show me a list of files that I supposed to create or update (in a context of last question and your answer). 
+
+Show me text files only (no images or ico files).
+
 I need a bare list with full paths - no other words
 ' >>"$CHAT_FILE"
 
-assistant --chat "$CHAT_FILE"
+eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
 
 # Extract assistant's last answer excluding first and last lines
 assistant --chat "$CHAT_FILE" --last | tail -n +2 | head -n $(($(assistant --chat "$CHAT_FILE" --last | wc -l) - 2)) >tmp/list.txt
@@ -35,10 +48,10 @@ I expect file content only
 Give me $line
 
 The current file is:
-$(cat $line)
+$(cat "$line" 2>/dev/null || true)
 " >>"$CHAT_FILE"
 
-    assistant --chat "$CHAT_FILE"
+    eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
     assistant --chat "$CHAT_FILE" --last | tail -n +2 | head -n $(($(assistant --chat "$CHAT_FILE" --last | wc -l) - 2)) >tmp/file.txt
     mkdir -p "$(dirname "$line")"
     cp tmp/file.txt "$line"
