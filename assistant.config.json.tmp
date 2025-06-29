@@ -1,0 +1,18 @@
+{
+  "name": "assistant-cli",
+  "dump": {
+    "include": [
+      "*.js",
+      "*.jsx",
+      "*.json",
+      "*.ts",
+      "*.tsx",
+      "*.sh"
+    ],
+    "exclude": [
+      "^.vscode/",
+      "package-lock.json"
+    ]
+  },
+  "chatFile": "chats/01.txt"
+}

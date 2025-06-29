@@ -1,21 +1,22 @@
 import fsPromises from 'fs/promises'
 import path from 'path'
-import * as fs from 'fs'
 
 const CONFIG_FILE = 'assistant.config.json'
+const WRITE_LOCK_TIMEOUT = 1000 // milliseconds
+let isWriting = false
 
-// Helper to ensure atomic writes by using a write lock
+// Helper to ensure atomic writes by using a global lock
 async function safeWriteFile(filePath, data) {
-  return new Promise((resolve, reject) => {
-    const tempPath = filePath + '.tmp'
-    fs.writeFile(tempPath, data, (err) => {
-      if (err) return reject(err)
-      fs.rename(tempPath, filePath, (err) => {
-        if (err) return reject(err)
-        resolve()
-      })
-    })
-  })
+  while (isWriting) {
+    await new Promise(resolve => setTimeout(resolve, WRITE_LOCK_TIMEOUT))
+  }
+
+  isWriting = true
+  try {
+    await fsPromises.writeFile(filePath, data)
+  } finally {
+    isWriting = false
+  }
 }
 
 // Initialize the configuration with a given name
