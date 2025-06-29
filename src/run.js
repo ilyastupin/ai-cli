@@ -44,7 +44,7 @@ export async function runCommand(input, chatFilePath = '') {
     child.on('exit', (code) => {
       if (code !== 0) {
         console.error(`❌ Script ${name}.sh exited with code ${code}. Please check the script and try again.`)
-        reject()
+        reject(new Error(`Script ${name}.sh failed with code ${code}`))
       } else {
         resolve()
       }
@@ -52,7 +52,10 @@ export async function runCommand(input, chatFilePath = '') {
 
     child.on('error', (err) => {
       console.error(`❌ Error executing script: ${err.message}`)
-      reject()
+      reject(new Error(`Execution error: ${err.message}`))
     })
+  }).catch(err => {
+    console.error(err.message)
+    process.exit(1)
   })
 }
