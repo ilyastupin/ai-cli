@@ -9,11 +9,23 @@ fi
 
 CHAT_FILE="$1"
 
+CONFIG_FILE="assistant.config.json"
+
+# Ensure config file exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "❌ Error: Config file $CONFIG_FILE not found!"
+    exit 1
+fi
+
+# Determine the output file name
+OUTPUT_BASE_NAME=$(jq -r '.name // "archive"' "$CONFIG_FILE")
+OUTPUT_FILE="__${OUTPUT_BASE_NAME}__.md"
+
 echo "🗃️ Running dump script..."
 assistant --chat "$CHAT_FILE" --run dump
 
-echo "📤 Uploading __archive__.md..."
-UPLOAD_JSON=$(node assistant.js --upload __archive__.md --json)
+echo "📤 Uploading $OUTPUT_FILE..."
+UPLOAD_JSON=$(assistant --upload "$OUTPUT_FILE" --json)
 
 FILE_ID=$(echo "$UPLOAD_JSON" | jq -r '.id')
 

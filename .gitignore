@@ -10,7 +10,7 @@ secrets.txt
 **/*.zip
 out
 #.env-remote*
-__archive__.md
+__*__.md
 tmp
 chats
 assistant.config.json

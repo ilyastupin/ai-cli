@@ -1,13 +1,16 @@
 #!/bin/bash
 
 CONFIG_FILE="assistant.config.json"
-OUTPUT_FILE="__archive__.md"
 
 # Step 1: Ensure config file exists
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "❌ Error: Config file $CONFIG_FILE not found!"
     exit 1
 fi
+
+# Read the output file name from the config file, and format it
+OUTPUT_BASE_NAME=$(jq -r '.name // "archive"' "$CONFIG_FILE")
+OUTPUT_FILE="__${OUTPUT_BASE_NAME}__.md"
 
 # Step 2: Build INCLUDE and EXCLUDE regex
 INCLUDE_REGEX=$(jq -r '.dump.include[]?' "$CONFIG_FILE" | sed 's/\./\\./g; s/\*/.*/g' | paste -sd '|' -)
