@@ -21,11 +21,19 @@ export async function runCommand(name, chatFilePath) {
     process.exit(1)
   }
 
-  const child = spawn('sh', [scriptPath, chatFilePath], {
-    stdio: 'inherit'
-  })
+  await new Promise((resolve, reject) => {
+    const child = spawn('sh', [scriptPath, chatFilePath], {
+      stdio: 'inherit'
+    })
 
-  child.on('exit', (code) => {
-    process.exit(code)
+    child.on('exit', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Script exited with code ${code}`))
+      } else {
+        resolve()
+      }
+    })
+
+    child.on('error', reject)
   })
 }

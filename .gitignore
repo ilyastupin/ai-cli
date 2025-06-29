@@ -10,5 +10,5 @@ secrets.txt
 **/*.zip
 out
 #.env-remote*
-archive.*
+__archive__.md
 tmp

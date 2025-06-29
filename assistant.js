@@ -124,7 +124,7 @@ const fileContent = await fsPromises.readFile(chatFile, 'utf8')
 // --- Run named script if requested
 if (runIndex !== -1 && args[runIndex + 1]) {
   const name = args[runIndex + 1]
-  await runCommand({ name, chatFile })
+  await runCommand(name, chatFile)
   process.exit(0)
 }
 
