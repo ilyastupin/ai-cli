@@ -11,12 +11,16 @@ import { braveSearchToFile } from './src/brave.js'
 import { runCommand } from './src/run.js'
 import { initConfig, updateChatFileConfig } from './src/init.js'
 
+// Convert exec to an async function using promisify for easier async/await usage
 const execAsync = promisify(exec)
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+// Load package details to extract version information for display
 const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8'))
 
+// Function to display usage instructions and then exit
 function showHelpAndExit() {
   console.log(`
 🤖 Assistant CLI Tool with Threads (OpenAI Assistants API)
@@ -48,9 +52,11 @@ Options:
   process.exit(0)
 }
 
+// Extract command-line arguments and check for '--help'
 const args = process.argv.slice(2)
 if (args.includes('--help') || args.length === 0) showHelpAndExit()
 
+// Determine indices for important flags in the command-line arguments
 const chatIndex = args.indexOf('--chat')
 const uploadIndex = args.indexOf('--upload')
 const deleteIndex = args.indexOf('--delete')
@@ -58,42 +64,50 @@ const useIndex = args.indexOf('--use')
 const runIndex = args.indexOf('--run')
 const initIndex = args.indexOf('--init')
 
+// Boolean flags to check certain command-line options
 const searchEnabled = args.includes('--search')
 const showLastOnly = args.includes('--last')
 const removeMd = args.includes('--remove-md')
 const jsonOutput = args.includes('--json')
 
+// Load configuration file or handle errors
 let config = {}
 try {
+  // Attempt to load the config file
   const configContent = await fsPromises.readFile('assistant.config.json', 'utf8')
   config = JSON.parse(configContent)
 } catch (err) {
   if (err.code !== 'ENOENT') {
+    // Log and exit if there was a problem other than a missing file
     console.error(`❌ Failed to load configuration: ${err.message}`)
     process.exit(1)
   }
 }
 
-// Configuration initialization
+// Handle initialization of configuration with a provided name
 if (initIndex !== -1 && args[initIndex + 1]) {
   const name = args[initIndex + 1]
-  await initConfig(name)
+  await initConfig(name) // Wait for initialization to complete
   process.exit(0)
 }
 
+// Determine the chat file to use, either from args or config
 let chatFile = chatIndex !== -1 && args[chatIndex + 1] ? args[chatIndex + 1] : config.chatFile
 if (!chatFile) {
+  // Error if no chat file is specified
   console.error(`❌ Chat file must be specified using --chat or configured in assistant.config.json`)
   showHelpAndExit()
 }
 
+// Update the chat file path in configuration if a new one is specified
 if (chatIndex !== -1 && args[chatIndex + 1]) {
   await updateChatFileConfig(chatFile)
 }
 
+// Resolve the full path to the chat file
 chatFile = path.resolve(chatFile)
 
-// Parse multiple --use file IDs if present
+// Parse file IDs specified with the --use option
 let fileIds = []
 if (useIndex !== -1 && args[useIndex + 1]) {
   fileIds = args[useIndex + 1]
@@ -102,7 +116,7 @@ if (useIndex !== -1 && args[useIndex + 1]) {
     .filter(Boolean)
 }
 
-// --- Upload file
+// Handle file uploads
 if (uploadIndex !== -1 && args[uploadIndex + 1]) {
   const filePath = path.resolve(args[uploadIndex + 1])
   const uploaded = await uploadFile(filePath)
@@ -118,7 +132,7 @@ if (uploadIndex !== -1 && args[uploadIndex + 1]) {
   process.exit(0)
 }
 
-// --- Delete file
+// Handle file deletion
 if (deleteIndex !== -1 && args[deleteIndex + 1]) {
   const fileId = args[deleteIndex + 1]
   const result = await deleteFile(fileId)
@@ -134,7 +148,7 @@ if (deleteIndex !== -1 && args[deleteIndex + 1]) {
   process.exit(0)
 }
 
-// --- List files
+// List files currently uploaded
 if (args.includes('--list')) {
   const files = await listFiles()
   if (jsonOutput) {
@@ -151,6 +165,7 @@ if (args.includes('--list')) {
   process.exit(0)
 }
 
+// Try to read the content of the specified chat file
 let fileContent = ''
 try {
   fileContent = await fsPromises.readFile(chatFile, 'utf8')
@@ -165,21 +180,21 @@ try {
   }
 }
 
-// --- Run named script if requested
+// Execute a named script if specified
 if (runIndex !== -1 && args[runIndex + 1]) {
   const name = args[runIndex + 1]
   await runCommand({ name, chatFile, fileIds: fileIds.length ? fileIds.join(',') : null })
   process.exit(0)
 }
 
-// --- Show last assistant answer
+// Show the last assistant response if requested
 if (showLastOnly) {
   const lastAnswer = getLastAnswer(fileContent, removeMd)
   if (lastAnswer) process.stdout.write(lastAnswer.trim() + '\n')
   process.exit(0)
 }
 
-// --- Ask assistant next question
+// Get next question for the assistant based on the chat file
 const { remainder, lastThreadId, lastAnswerIndex } = getQuestion(fileContent)
 if (!remainder) {
   console.log('✅ No new question found after last answer.')
@@ -187,7 +202,7 @@ if (!remainder) {
   process.exit(0)
 }
 
-// --- Optional Brave search integration
+// Perform a Brave search if requested and attach results
 if (searchEnabled) {
   console.log('🔍 Asking assistant how to phrase Brave search...')
   const { answer: searchQuery } = await askQuestion({
@@ -213,7 +228,7 @@ if (searchEnabled) {
   }
 }
 
-// --- Ask assistant
+// Ask the assistant a question and process the response
 console.log('🤖 Asking assistant...')
 const { answer, threadId } = await askQuestion({
   question: remainder,
@@ -221,10 +236,11 @@ const { answer, threadId } = await askQuestion({
   threadId: lastThreadId
 })
 
-// Remove Brave-style reference markers
+// Clean the answer of any external references
 const cleanAnswer = answer.replace(/【\d+:\d+†.*?】/g, '')
 await putAnswer(chatFile, cleanAnswer, threadId, lastAnswerIndex)
 
+// Optionally render markdown to HTML and open it in the browser after obtaining the answer
 if (args.includes('--open-md')) {
   const updatedContent = await fsPromises.readFile(chatFile, 'utf8')
   await generateMarkdownHtml(chatFile, updatedContent)
