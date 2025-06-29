@@ -29,7 +29,7 @@ export async function initConfig(name) {
     // Read existing configuration if it exists
     try {
       const existingConfig = await fsPromises.readFile(configPath, 'utf8')
-      config = JSON.parse(existingConfig)
+      config = existingConfig ? JSON.parse(existingConfig) : {}
     } catch (err) {
       if (err.code !== 'ENOENT') throw err // Continue if file not found
     }
@@ -61,7 +61,7 @@ export async function updateChatFileConfig(chatFilePath) {
     // Read existing configuration
     try {
       const existingConfig = await fsPromises.readFile(configPath, 'utf8')
-      config = JSON.parse(existingConfig)
+      config = existingConfig ? JSON.parse(existingConfig) : {}
     } catch (err) {
       if (err.code !== 'ENOENT') throw err // Continue if file not found
     }
