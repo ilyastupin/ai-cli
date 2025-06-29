@@ -50,6 +50,8 @@ I need a bare list with full paths - no other words
 
 ' >>"$CHAT_FILE"
 
+eval assistant --chat "\"$CHAT_FILE\"" $USE_ARGS
+
 assistant --chat "$CHAT_FILE" --last --remove-md >tmp/list.txt
 
 echo 'the file list is:'
@@ -74,4 +76,4 @@ $(cat "$line" 2>/dev/null || true)
 done
 
 git add .
-git commit -m $(cat tmp/commit.txt)
+git commit -m "$(cat tmp/commit.txt)"
