@@ -33,6 +33,7 @@ Usage:
   assistant --delete <file-id>
   assistant --list
   assistant --init <name>
+  assistant --check
 
 Options:
   --chat <file.txt>     Run assistant with chat file (thread continues via embedded thread_id)
@@ -46,6 +47,7 @@ Options:
   --run <name>          Run a script from ./commands (requires --chat)
   --search              Perform a Brave search and attach results to the chat
   --init <name>         Initialize the assistant configuration file with the given name
+  --check               Check for new questions in the chat and indicate status
   --json                Output machine-readable JSON (for --upload, --delete, --list)
   --help                Show this message
 `)
@@ -57,7 +59,7 @@ const args = process.argv.slice(2)
 if (args.includes('--help')) showHelpAndExit()
 
 // Set of valid command-line options
-const validOptions = new Set(['--chat', '--upload', '--delete', '--use', '--run', '--init', '--search', '--last', '--remove-md', '--open-md', '--json', '--help', '--list'])
+const validOptions = new Set(['--chat', '--upload', '--delete', '--use', '--run', '--init', '--search', '--last', '--remove-md', '--open-md', '--json', '--help', '--list', '--check'])
 
 // Validate the arguments for invalid options
 const invalidOptions = args.filter(arg => arg.startsWith('--') && !validOptions.has(arg))
@@ -107,6 +109,7 @@ const searchEnabled = args.includes('--search')
 const showLastOnly = args.includes('--last')
 const removeMd = args.includes('--remove-md')
 const jsonOutput = args.includes('--json')
+const checkOnly = args.includes('--check')
 
 // Determine the chat file to use, either from args or config
 let chatFile = chatIndex !== -1 && args[chatIndex + 1] ? args[chatIndex + 1] : config.chatFile
@@ -202,6 +205,18 @@ if (runIndex !== -1 && args[runIndex + 1]) {
   const name = args[runIndex + 1]
   await runCommand({ name, chatFile, fileIds: fileIds.length ? fileIds.join(',') : null })
   process.exit(0)
+}
+
+// Check for new questions in the chat file if requested
+if (checkOnly) {
+  const { remainder } = getQuestion(fileContent)
+  if (!remainder) {
+    console.log('❌ No new question found.')
+    process.exit(1) // Exit with error if no new question
+  } else {
+    console.log('✅ New question detected.')
+    process.exit(0) // Exit successfully if there's a new question
+  }
 }
 
 // Show the last assistant response if requested
