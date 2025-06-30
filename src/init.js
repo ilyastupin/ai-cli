@@ -20,6 +20,14 @@ export function initConfig(name) {
     // Update name, preserving other attributes
     config.name = name
 
+    // Ensure dump section exists with default values if it's missing
+    if (!config.dump) {
+      config.dump = {
+        include: ['*.js', '*.jsx', '*.json', '*.ts', '*.tsx', '*.sh'],
+        exclude: ['^.vscode/', 'package-lock.json']
+      }
+    }
+
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
     console.log(`✅ Configuration updated with name: ${name}`)
   } catch (error) {
