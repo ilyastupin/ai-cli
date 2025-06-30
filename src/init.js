@@ -1,4 +1,3 @@
-✅ Chat file path updated in configuration: /Users/ilyanew/work/Marcato/deploy71/ai/CLI/chats/01.txt
 import fs from 'fs'
 import path from 'path'
 
@@ -29,7 +28,7 @@ export function initConfig(name) {
 }
 
 // Update or set the chat file in configuration
-export function updateChatFileConfig(chatFilePath) {
+export function updateChatFileConfig(chatFilePath, silent = false) {
   try {
     const configPath = path.resolve(CONFIG_FILE)
 
@@ -46,7 +45,9 @@ export function updateChatFileConfig(chatFilePath) {
     config.chatFile = path.relative(process.cwd(), chatFilePath)
 
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
-    console.log(`✅ Chat file path updated in configuration: ${chatFilePath}`)
+    if (!silent) {
+      console.log(`✅ Chat file path updated in configuration: ${chatFilePath}`)
+    }
   } catch (error) {
     console.error(`❌ Error updating chat file in config: ${error.message}`)
   }
