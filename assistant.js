@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename)
 const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf8'))
 
 // Main asynchronous function to handle operations in an IIFE
-(async () => {
+;(async () => {
   // Function to display usage instructions and then exit
   function showHelpAndExit() {
     console.log(`
@@ -61,10 +61,25 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
   if (args.includes('--help')) showHelpAndExit()
 
   // Set of valid command-line options
-  const validOptions = new Set(['--chat', '--upload', '--delete', '--use', '--run', '--init', '--search', '--last', '--remove-md', '--open-md', '--json', '--help', '--list', '--check'])
+  const validOptions = new Set([
+    '--chat',
+    '--upload',
+    '--delete',
+    '--use',
+    '--run',
+    '--init',
+    '--search',
+    '--last',
+    '--remove-md',
+    '--open-md',
+    '--json',
+    '--help',
+    '--list',
+    '--check'
+  ])
 
   // Validate the arguments for invalid options
-  const invalidOptions = args.filter(arg => arg.startsWith('--') && !validOptions.has(arg))
+  const invalidOptions = args.filter((arg) => arg.startsWith('--') && !validOptions.has(arg))
   if (invalidOptions.length > 0) {
     console.error(`❌ Invalid options detected: ${invalidOptions.join(', ')}`)
     showHelpAndExit()
@@ -98,7 +113,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
   // Asynchronous initialization without immediate exit
   if (initIndex !== -1 && args[initIndex + 1]) {
     const name = args[initIndex + 1]
-    initConfig(name).catch(err => {
+    initConfig(name).catch((err) => {
       console.error(`❌ Configuration initialization failed: ${err.message}`)
     })
   }
@@ -132,7 +147,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
 
   // Update the chat file path in configuration if a new one is specified
   if (chatIndex !== -1 && args[chatIndex + 1]) {
-    updateChatFileConfig(chatFile).catch(err => {
+    updateChatFileConfig(chatFile).catch((err) => {
       console.error(`❌ Failed to update chat file config: ${err.message}`)
     })
   }
@@ -153,7 +168,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
   if (uploadIndex !== -1 && args[uploadIndex + 1]) {
     const filePath = path.resolve(args[uploadIndex + 1])
     uploadFile(filePath)
-      .then(uploaded => {
+      .then((uploaded) => {
         if (jsonOutput) {
           console.log(JSON.stringify(uploaded, null, 2))
         } else {
@@ -165,7 +180,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
         }
         process.exit(0)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(`❌ Upload failed: ${err.message}`)
         process.exit(1)
       })
@@ -175,7 +190,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
   if (deleteIndex !== -1 && args[deleteIndex + 1]) {
     const fileId = args[deleteIndex + 1]
     deleteFile(fileId)
-      .then(result => {
+      .then((result) => {
         if (jsonOutput) {
           console.log(JSON.stringify(result, null, 2))
         } else {
@@ -187,7 +202,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
         }
         process.exit(0)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(`❌ Delete operation failed: ${err.message}`)
         process.exit(1)
       })
@@ -196,7 +211,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
   // List files currently uploaded
   if (args.includes('--list')) {
     listFiles()
-      .then(files => {
+      .then((files) => {
         if (jsonOutput) {
           console.log(JSON.stringify(files, null, 2))
         } else {
@@ -210,7 +225,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
         }
         process.exit(0)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(`❌ Listing files failed: ${err.message}`)
         process.exit(1)
       })
