@@ -1,3 +1,4 @@
+✅ Chat file path updated in configuration: /Users/ilyanew/work/Marcato/deploy71/ai/CLI/chats/01.txt
 import fs from 'fs'
 import path from 'path'
 
@@ -8,26 +9,17 @@ export function initConfig(name) {
   try {
     const configPath = path.resolve(CONFIG_FILE)
 
+    // Load existing configuration or start with a blank object
     let config = {}
-
-    // Read existing configuration if it exists
     try {
       const existingConfig = fs.readFileSync(configPath, 'utf8')
       config = existingConfig ? JSON.parse(existingConfig) : {}
     } catch (err) {
-      if (err.code !== 'ENOENT') throw err // Continue if file not found
+      if (err.code !== 'ENOENT') throw err
     }
 
-    // Always update the name
+    // Update name, preserving other attributes
     config.name = name
-
-    // Ensure dump section exists
-    if (!config.dump) {
-      config.dump = {
-        include: ['*.js', '*.jsx', '*.json', '*.ts', '*.tsx', '*.sh'],
-        exclude: ['^.vscode/', 'package-lock.json']
-      }
-    }
 
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
     console.log(`✅ Configuration updated with name: ${name}`)
@@ -40,17 +32,17 @@ export function initConfig(name) {
 export function updateChatFileConfig(chatFilePath) {
   try {
     const configPath = path.resolve(CONFIG_FILE)
-    let config = {}
 
-    // Read existing configuration
+    // Load existing configuration or start with a blank object
+    let config = {}
     try {
       const existingConfig = fs.readFileSync(configPath, 'utf8')
       config = existingConfig ? JSON.parse(existingConfig) : {}
     } catch (err) {
-      if (err.code !== 'ENOENT') throw err // Continue if file not found
+      if (err.code !== 'ENOENT') throw err
     }
 
-    // Always store relative paths for chat files
+    // Update chatFile, preserving other attributes
     config.chatFile = path.relative(process.cwd(), chatFilePath)
 
     fs.writeFileSync(configPath, JSON.stringify(config, null, 2))

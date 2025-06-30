@@ -32,29 +32,37 @@ export async function runCommand(input, chatFilePath = '') {
   }
 
   const args = [scriptPath, chatFile]
-  if (fileIds) {
-    args.push(fileIds)
-  }
+  if (fileIds) args.push(fileIds)
+
+  const child = spawn('bash', args, { stdio: ['inherit', 'pipe', 'pipe'] })
+
+  let stdout = ''
+  let stderr = ''
+
+  child.stdout.on('data', (data) => {
+    process.stdout.write(data)
+    stdout += data
+  })
+
+  child.stderr.on('data', (data) => {
+    process.stderr.write(data)
+    stderr += data
+  })
 
   await new Promise((resolve, reject) => {
-    const child = spawn('bash', args, {
-      stdio: 'inherit'
-    })
-
     child.on('exit', (code) => {
       if (code !== 0) {
-        console.error(`❌ Script ${name}.sh exited with code ${code}. Please check the script and try again.`)
-        reject(new Error(`Script ${name}.sh failed with code ${code}`))
+        const errorMsg = `❌ Script ${name}.sh failed with code ${code}\n--- STDERR ---\n${stderr}`
+        reject(new Error(errorMsg))
       } else {
         resolve()
       }
     })
 
     child.on('error', (err) => {
-      console.error(`❌ Error executing script: ${err.message}`)
       reject(new Error(`Execution error: ${err.message}`))
     })
-  }).catch(err => {
+  }).catch((err) => {
     console.error(err.message)
     process.exit(1)
   })

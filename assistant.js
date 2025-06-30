@@ -147,9 +147,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
 
   // Update the chat file path in configuration if a new one is specified
   if (chatIndex !== -1 && args[chatIndex + 1]) {
-    updateChatFileConfig(chatFile).catch((err) => {
-      console.error(`❌ Failed to update chat file config: ${err.message}`)
-    })
+    updateChatFileConfig(chatFile)
   }
 
   // Resolve the full path to the chat file
