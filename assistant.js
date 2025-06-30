@@ -1,3 +1,4 @@
+✅ Chat file path updated in configuration: /Users/ilyanew/work/Marcato/deploy71/ai/CLI/chats/01.txt
 import fsPromises from 'fs/promises'
 import fs from 'fs'
 import path from 'path'
@@ -113,9 +114,11 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
   // Asynchronous initialization without immediate exit
   if (initIndex !== -1 && args[initIndex + 1]) {
     const name = args[initIndex + 1]
-    initConfig(name).catch((err) => {
+    try {
+      initConfig(name)
+    } catch (err) {
       console.error(`❌ Configuration initialization failed: ${err.message}`)
-    })
+    }
   }
 
   // Run the current chat if no parameters are provided but a chat is configured
@@ -147,7 +150,11 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
 
   // Update the chat file path in configuration if a new one is specified
   if (chatIndex !== -1 && args[chatIndex + 1]) {
-    updateChatFileConfig(chatFile)
+    try {
+      updateChatFileConfig(chatFile, showLastOnly)
+    } catch (err) {
+      console.error(`❌ Failed to update chat file config: ${err.message}`)
+    }
   }
 
   // Resolve the full path to the chat file
@@ -262,63 +269,3 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'package.json'), 
       process.exit(0)
     }
   }
-
-  // Show the last assistant response if requested
-  if (showLastOnly) {
-    const lastAnswer = getLastAnswer(fileContent, removeMd)
-    if (lastAnswer) process.stdout.write(lastAnswer.trim() + '\n')
-    process.exit(0)
-  }
-
-  // Get next question for the assistant based on the chat file
-  const { remainder, lastThreadId, lastAnswerIndex } = getQuestion(fileContent)
-  if (!remainder) {
-    console.log('✅ No new question found after last answer.')
-    if (args.includes('--open-md')) await generateMarkdownHtml(chatFile, fileContent)
-    process.exit(0)
-  }
-
-  // Perform a Brave search if requested and attach results
-  if (searchEnabled) {
-    console.log('🔍 Asking assistant how to phrase Brave search...')
-    const { answer: searchQuery } = await askQuestion({
-      question: `You are a tool that extracts concise and effective search queries. Rewrite the user question below into a short, information-retrieval friendly format for a Brave search engine. Be specific and omit any extra commentary.
-  
-  "${remainder}"`,
-      fileIds: [],
-      threadId: null
-    })
-    console.log(`🔎 Brave search query: ${searchQuery.trim()}`)
-
-    try {
-      const braveFile = await braveSearchToFile(searchQuery.trim(), { trace: false, maxLinks: 20 })
-      if (braveFile) {
-        console.log(`📄 Brave content saved to file: ${braveFile}`)
-        const uploaded = await uploadFile(braveFile)
-        fileIds.unshift(uploaded.id) // Prepend Brave file
-      } else {
-        console.warn('⚠️ Brave search returned no usable content. Proceeding without attached file.')
-      }
-    } catch (err) {
-      console.warn(`⚠️ Brave search failed: ${err.message}. Proceeding without attached file.`)
-    }
-  }
-
-  // Ask the assistant a question and process the response
-  console.log('🤖 Asking assistant...')
-  const { answer, threadId } = await askQuestion({
-    question: remainder,
-    fileIds,
-    threadId: lastThreadId
-  })
-
-  // Clean the answer of any external references
-  const cleanAnswer = answer.replace(/【\d+:\d+†.*?】/g, '')
-  await putAnswer(chatFile, cleanAnswer, threadId, lastAnswerIndex)
-
-  // Optionally render markdown to HTML and open it in the browser after obtaining the answer
-  if (args.includes('--open-md')) {
-    const updatedContent = await fsPromises.readFile(chatFile, 'utf8')
-    await generateMarkdownHtml(chatFile, updatedContent)
-  }
-})()
