@@ -2,7 +2,7 @@
 import fs from 'fs'
 import path from 'path'
 import { toFile } from 'openai'
-import { logAction } from './src/log.js' // ← updated here
+import { logAction } from '../logger/log.js' // ← updated here
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VECTOR STORAGE
@@ -13,11 +13,11 @@ export async function createVectorStore(name) {
   return result.id
 }
 
-export async function uploadFilesToVectorStore(vectorStoreId, filePaths) {
+export async function uploadFilesToVectorStore(vectorStoreId, filePaths, metadata = {}) {
   const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
   await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
   const uploadedCount = files.length
-  logAction('uploadFilesToVectorStore', { vectorStoreId, filePaths }, uploadedCount)
+  logAction('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, uploadedCount)
   return uploadedCount
 }
 

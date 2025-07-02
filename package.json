@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "istextorbinary": "^9.5.0",
     "openai": "^5.8.2"
   }
 }
