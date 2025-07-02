@@ -1,52 +1,54 @@
-// ai.js with selective logging and full read-only support
 import fs from 'fs'
 import path from 'path'
 import { toFile } from 'openai'
-import { logAction } from '../logger/log.js' // ← updated here
+import OpenAI from 'openai'
+import { putHistory } from '../history/history.js'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VECTOR STORAGE
 
 export async function createVectorStore(name) {
-  const result = await openai.beta.vectorStores.create({ name })
-  logAction('createVectorStore', { name }, result)
+  const result = await openai.vectorStores.create({ name })
+  putHistory('createVectorStore', { name }, result)
   return result.id
 }
 
 export async function uploadFilesToVectorStore(vectorStoreId, filePaths, metadata = {}) {
   const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
-  await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
+  await openai.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
   const uploadedCount = files.length
-  logAction('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, uploadedCount)
+  putHistory('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, uploadedCount)
   return uploadedCount
 }
 
 export async function listVectorStoreFiles(vectorStoreId) {
-  const result = await openai.beta.vectorStores.files.list(vectorStoreId)
+  const result = await openai.vectorStores.files.list(vectorStoreId)
   return result.data.map((f) => ({ id: f.id, name: f.filename, status: f.status }))
 }
 
 export async function deleteVectorStoreFile(vectorStoreId, fileId) {
-  const result = await openai.beta.vectorStores.files.delete(vectorStoreId, fileId)
-  logAction('deleteVectorStoreFile', { vectorStoreId, fileId }, result)
+  const result = await openai.vectorStores.files.delete(vectorStoreId, fileId)
+  putHistory('deleteVectorStoreFile', { vectorStoreId, fileId }, result)
   return result
 }
 
 export async function deleteVectorStore(vectorStoreId) {
-  const result = await openai.beta.vectorStores.del(vectorStoreId)
-  logAction('deleteVectorStore', { vectorStoreId }, result)
+  const result = await openai.vectorStores.delete(vectorStoreId)
+  putHistory('deleteVectorStore', { vectorStoreId }, result)
   return result
 }
 
 export async function getVectorStore(vectorStoreId) {
-  return await openai.beta.vectorStores.retrieve(vectorStoreId)
+  return await openai.vectorStores.retrieve(vectorStoreId)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ASSISTANT
 
 export async function createAssistant({ name, instructions, model, vectorStoreIds }) {
-  const result = await openai.beta.assistants.create({
+  const result = await openai.assistants.create({
     name,
     instructions,
     model,
@@ -55,41 +57,41 @@ export async function createAssistant({ name, instructions, model, vectorStoreId
       file_search: { vector_store_ids: vectorStoreIds }
     }
   })
-  logAction('createAssistant', { name, instructions, model, vectorStoreIds }, result)
+  putHistory('createAssistant', { name, instructions, model, vectorStoreIds }, result)
   return result.id
 }
 
 export async function updateAssistantVectorStores(assistantId, vectorStoreIds) {
-  const result = await openai.beta.assistants.update(assistantId, {
+  const result = await openai.assistants.update(assistantId, {
     tool_resources: {
       file_search: { vector_store_ids: vectorStoreIds }
     }
   })
-  logAction('updateAssistantVectorStores', { assistantId, vectorStoreIds }, result)
+  putHistory('updateAssistantVectorStores', { assistantId, vectorStoreIds }, result)
   return result
 }
 
 export async function deleteAssistant(assistantId) {
-  const result = await openai.beta.assistants.del(assistantId)
-  logAction('deleteAssistant', { assistantId }, result)
+  const result = await openai.assistants.delete(assistantId)
+  putHistory('deleteAssistant', { assistantId }, result)
   return result
 }
 
 export async function getAssistant(assistantId) {
-  return await openai.beta.assistants.retrieve(assistantId)
+  return await openai.assistants.retrieve(assistantId)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // THREAD
 
 export async function createThread() {
-  const result = await openai.beta.threads.create()
-  logAction('createThread', {}, result)
+  const result = await openai.threads.create()
+  putHistory('createThread', {}, result)
   return result.id
 }
 
 export async function askQuestion({ assistantId, threadId, question, onProgress = () => {} }) {
-  const run = await openai.beta.threads.createAndRun({
+  const run = await openai.threads.createAndRun({
     assistant_id: assistantId,
     thread: { id: threadId, messages: [{ role: 'user', content: question }] }
   })
@@ -97,29 +99,29 @@ export async function askQuestion({ assistantId, threadId, question, onProgress 
   while (run.status === 'queued' || run.status === 'in_progress') {
     onProgress(run.status)
     await new Promise((r) => setTimeout(r, 1000))
-    const updated = await openai.beta.threads.runs.retrieve(run.thread_id, run.id)
+    const updated = await openai.runs.retrieve(run.thread_id, run.id)
     Object.assign(run, updated)
   }
 
-  const messages = await openai.beta.threads.messages.list(run.thread_id)
+  const messages = await openai.messages.list(run.thread_id)
   const reply = messages.data.find((m) => m.role === 'assistant')?.content?.[0]?.text?.value
-  logAction('askQuestion', { assistantId, threadId, question }, reply)
+  putHistory('askQuestion', { assistantId, threadId, question }, reply)
   return reply
 }
 
 export async function getThreadMessages(threadId) {
-  const res = await openai.beta.threads.messages.list(threadId)
+  const res = await openai.messages.list(threadId)
   return res.data
 }
 
 export async function deleteThread(threadId) {
-  const result = await openai.beta.threads.del(threadId)
-  logAction('deleteThread', { threadId }, result)
+  const result = await openai.threads.delete(threadId)
+  putHistory('deleteThread', { threadId }, result)
   return result
 }
 
 export async function estimateTokenCount({ threadId, prompt }) {
-  const messages = await openai.beta.threads.messages.list(threadId)
+  const messages = await openai.messages.list(threadId)
   const text = messages.data.flatMap((m) => m.content.map((c) => c.text?.value || '')).join('\n') + '\n' + prompt
   const tokens = encode(text).length
   return tokens

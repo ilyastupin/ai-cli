@@ -1,38 +1,46 @@
-import { execSync } from 'child_process'
 import fs from 'fs'
-import { isBinary } from 'istextorbinary'
+import path from 'path'
+import { execSync } from 'child_process'
+import archiver from 'archiver'
 
 /**
- * Checks whether a file is binary using its content.
- * @param {string} filePath
- * @returns {boolean}
+ * Returns the latest Git commit hash and list of all tracked files.
+ * @returns {{ commit: string, files: string[] }}
  */
-function isBinaryFile(filePath) {
+function getGitTrackedFiles() {
   try {
-    const buffer = fs.readFileSync(filePath)
-    return isBinary(filePath, buffer)
+    const filesOutput = execSync('git ls-files', { encoding: 'utf-8' })
+    const files = filesOutput.split('\n').filter(Boolean)
+    const commit = execSync('git rev-parse HEAD', { encoding: 'utf-8' }).trim()
+    return { commit, files }
   } catch (err) {
-    console.warn(`⚠️ Skipping unreadable file "${filePath}": ${err.message}`)
-    return true // assume binary if unreadable
+    console.error('❌ Failed to get git files:', err.message)
+    return { commit: 'unknown', files: [] }
   }
 }
 
 /**
- * Returns latest Git commit hash and list of text-based (non-binary) tracked files.
- * @returns {{ commit: string, files: string[] }}
+ * Archives Git-tracked project files into a zip file in `.tmp/` folder.
+ * @returns {Promise<string>} Absolute path to the zip archive.
  */
-export function getGitTrackedFiles() {
-  try {
-    const filesOutput = execSync('git ls-files', { encoding: 'utf-8' })
-    const allFiles = filesOutput.split('\n').filter(Boolean)
+export async function zipCodebase() {
+  const { commit, files } = getGitTrackedFiles()
 
-    const textFiles = allFiles.filter((file) => !isBinaryFile(file))
+  const tmpDir = path.resolve('.tmp')
+  const zipPath = path.join(tmpDir, `codebase-${commit.slice(0, 8)}.zip`)
+  fs.mkdirSync(tmpDir, { recursive: true })
 
-    const commitHash = execSync('git rev-parse HEAD', { encoding: 'utf-8' }).trim()
+  await new Promise((resolve, reject) => {
+    const output = fs.createWriteStream(zipPath)
+    const archive = archiver('zip', { zlib: { level: 9 } })
 
-    return { commit: commitHash, files: textFiles }
-  } catch (err) {
-    console.error('❌ Failed to run git commands:', err.message)
-    return { commit: null, files: [] }
-  }
+    output.on('close', resolve)
+    archive.on('error', reject)
+
+    archive.pipe(output)
+    files.forEach((file) => archive.file(file, { name: file }))
+    archive.finalize()
+  })
+
+  return zipPath
 }
