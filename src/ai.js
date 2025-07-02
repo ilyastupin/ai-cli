@@ -2,26 +2,7 @@
 import fs from 'fs'
 import path from 'path'
 import { toFile } from 'openai'
-
-const LOG_FILE = path.resolve('log/ai.json')
-
-/**
- * Append a log entry to the ai.json log file.
- * @param {string} funcName
- * @param {any} args
- * @param {any} result
- */
-function logAction(funcName, args, result) {
-  try {
-    const logPath = LOG_FILE
-    const logs = fs.existsSync(logPath) ? JSON.parse(fs.readFileSync(logPath, 'utf-8')) : []
-    logs.push({ funcName, arguments: args, result })
-    fs.mkdirSync(path.dirname(logPath), { recursive: true })
-    fs.writeFileSync(logPath, JSON.stringify(logs, null, 2))
-  } catch (err) {
-    console.warn(`[logAction] Failed to write log: ${err.message}`)
-  }
-}
+import { logAction } from './src/log.js' // ← updated here
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VECTOR STORAGE
@@ -35,11 +16,11 @@ export async function createVectorStore(name) {
 export async function uploadFilesToVectorStore(vectorStoreId, filePaths) {
   const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
   await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
-
   const uploadedCount = files.length
   logAction('uploadFilesToVectorStore', { vectorStoreId, filePaths }, uploadedCount)
   return uploadedCount
 }
+
 export async function listVectorStoreFiles(vectorStoreId) {
   const result = await openai.beta.vectorStores.files.list(vectorStoreId)
   return result.data.map((f) => ({ id: f.id, name: f.filename, status: f.status }))
