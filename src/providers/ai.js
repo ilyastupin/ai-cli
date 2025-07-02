@@ -25,7 +25,11 @@ export async function uploadFilesToVectorStore(vectorStoreId, filePaths, metadat
 
 export async function listVectorStoreFiles(vectorStoreId) {
   const result = await openai.vectorStores.files.list(vectorStoreId)
-  return result.data.map((f) => ({ id: f.id, name: f.filename, status: f.status }))
+  return result.data.map((f) => ({
+    id: f.id,
+    name: f.file_name || f.filename || 'unknown',
+    status: f.status
+  }))
 }
 
 export async function deleteVectorStoreFile(vectorStoreId, fileId) {
@@ -48,7 +52,7 @@ export async function getVectorStore(vectorStoreId) {
 // ASSISTANT
 
 export async function createAssistant({ name, instructions, model, vectorStoreIds }) {
-  const result = await openai.assistants.create({
+  const result = await openai.beta.assistants.create({
     name,
     instructions,
     model,
@@ -62,7 +66,7 @@ export async function createAssistant({ name, instructions, model, vectorStoreId
 }
 
 export async function updateAssistantVectorStores(assistantId, vectorStoreIds) {
-  const result = await openai.assistants.update(assistantId, {
+  const result = await openai.beta.assistants.update(assistantId, {
     tool_resources: {
       file_search: { vector_store_ids: vectorStoreIds }
     }
@@ -72,56 +76,68 @@ export async function updateAssistantVectorStores(assistantId, vectorStoreIds) {
 }
 
 export async function deleteAssistant(assistantId) {
-  const result = await openai.assistants.delete(assistantId)
+  const result = await openai.beta.assistants.delete(assistantId)
   putHistory('deleteAssistant', { assistantId }, result)
   return result
 }
 
 export async function getAssistant(assistantId) {
-  return await openai.assistants.retrieve(assistantId)
+  return await openai.beta.assistants.retrieve(assistantId)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // THREAD
 
 export async function createThread() {
-  const result = await openai.threads.create()
+  const result = await openai.beta.threads.create()
   putHistory('createThread', {}, result)
   return result.id
 }
 
 export async function askQuestion({ assistantId, threadId, question, onProgress = () => {} }) {
-  const run = await openai.threads.createAndRun({
-    assistant_id: assistantId,
-    thread: { id: threadId, messages: [{ role: 'user', content: question }] }
+  // Add user message to existing thread
+  await openai.beta.threads.messages.create(threadId, {
+    role: 'user',
+    content: question
   })
 
-  while (run.status === 'queued' || run.status === 'in_progress') {
+  // Initiate a run
+  let run = await openai.beta.threads.runs.create(threadId, {
+    assistant_id: assistantId
+  })
+
+  // Poll for completion
+  while (['queued', 'in_progress'].includes(run.status)) {
     onProgress(run.status)
     await new Promise((r) => setTimeout(r, 1000))
-    const updated = await openai.runs.retrieve(run.thread_id, run.id)
-    Object.assign(run, updated)
+    run = await openai.beta.threads.runs.retrieve(run.id, { thread_id: threadId })
   }
 
-  const messages = await openai.messages.list(run.thread_id)
-  const reply = messages.data.find((m) => m.role === 'assistant')?.content?.[0]?.text?.value
+  // Get latest assistant reply
+  const messages = await openai.beta.threads.messages.list(threadId)
+  const reply = messages.data
+    .filter((m) => m.role === 'assistant')
+    .map((m) => m.content?.[0]?.text?.value)
+    .filter(Boolean)
+    .pop()
+
   putHistory('askQuestion', { assistantId, threadId, question }, reply)
   return reply
 }
 
 export async function getThreadMessages(threadId) {
-  const res = await openai.messages.list(threadId)
+  const res = await openai.beta.threads.messages.list(threadId)
   return res.data
 }
 
 export async function deleteThread(threadId) {
-  const result = await openai.threads.delete(threadId)
+  const result = await openai.beta.threads.delete(threadId)
   putHistory('deleteThread', { threadId }, result)
   return result
 }
 
 export async function estimateTokenCount({ threadId, prompt }) {
-  const messages = await openai.messages.list(threadId)
+  const messages = await openai.beta.threads.messages.list(threadId)
   const text = messages.data.flatMap((m) => m.content.map((c) => c.text?.value || '')).join('\n') + '\n' + prompt
   const tokens = encode(text).length
   return tokens

@@ -1,46 +1,38 @@
-import fs from 'fs'
-import path from 'path'
 import { execSync } from 'child_process'
-import archiver from 'archiver'
+import fs from 'fs'
+import { isBinary } from 'istextorbinary'
 
 /**
- * Returns the latest Git commit hash and list of all tracked files.
- * @returns {{ commit: string, files: string[] }}
+ * Checks whether a file is binary using its content.
+ * @param {string} filePath
+ * @returns {boolean}
  */
-function getGitTrackedFiles() {
+function isBinaryFile(filePath) {
   try {
-    const filesOutput = execSync('git ls-files', { encoding: 'utf-8' })
-    const files = filesOutput.split('\n').filter(Boolean)
-    const commit = execSync('git rev-parse HEAD', { encoding: 'utf-8' }).trim()
-    return { commit, files }
+    const buffer = fs.readFileSync(filePath)
+    return isBinary(filePath, buffer)
   } catch (err) {
-    console.error('❌ Failed to get git files:', err.message)
-    return { commit: 'unknown', files: [] }
+    console.warn(`⚠️ Skipping unreadable file "${filePath}": ${err.message}`)
+    return true // assume binary if unreadable
   }
 }
 
 /**
- * Archives Git-tracked project files into a zip file in `.tmp/` folder.
- * @returns {Promise<string>} Absolute path to the zip archive.
+ * Returns latest Git commit hash and list of text-based (non-binary) tracked files.
+ * @returns {{ commit: string, files: string[] }}
  */
-export async function zipCodebase() {
-  const { commit, files } = getGitTrackedFiles()
+export function getGitTrackedFiles() {
+  try {
+    const filesOutput = execSync('git ls-files', { encoding: 'utf-8' })
+    const allFiles = filesOutput.split('\n').filter(Boolean)
 
-  const tmpDir = path.resolve('.tmp')
-  const zipPath = path.join(tmpDir, `codebase-${commit.slice(0, 8)}.zip`)
-  fs.mkdirSync(tmpDir, { recursive: true })
+    const textFiles = allFiles.filter((file) => !isBinaryFile(file))
 
-  await new Promise((resolve, reject) => {
-    const output = fs.createWriteStream(zipPath)
-    const archive = archiver('zip', { zlib: { level: 9 } })
+    const commitHash = execSync('git rev-parse HEAD', { encoding: 'utf-8' }).trim()
 
-    output.on('close', resolve)
-    archive.on('error', reject)
-
-    archive.pipe(output)
-    files.forEach((file) => archive.file(file, { name: file }))
-    archive.finalize()
-  })
-
-  return zipPath
+    return { commit: commitHash, files: textFiles }
+  } catch (err) {
+    console.error('❌ Failed to run git commands:', err.message)
+    return { commit: null, files: [] }
+  }
 }

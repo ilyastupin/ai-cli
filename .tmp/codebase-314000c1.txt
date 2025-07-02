@@ -1,0 +1,705 @@
+
+
+// .gitignore
+node_modules
+
+/.cache
+/build
+#.env
+**/mysql-data
+public/build
+secrets.txt
+**/backups
+**/*.zip
+out
+#.env-remote*
+__*__.md
+tmp
+chats
+assistant.config.json
+
+
+// .prettierrc
+{
+  "tabWidth": 2,
+  "printWidth": 125,
+  "singleQuote": true,
+  "semi": false,
+  "trailingComma": "none",
+  "bracketSpacing": true,
+  "arrowParens": "always"
+}
+
+
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "streetsidesoftware.code-spell-checker",
+    "bierner.comment-tagged-templates",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "yoavbls.pretty-ts-errors",
+    "dpkshrma.insert-iso-timestamp"
+  ]
+}
+
+
+// .vscode/launch.json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Customer Web",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/customer-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"]
+    },
+    {
+      "name": "Launch CI-CD Customer Web",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/customer-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["serve-cicd"]
+    },
+    {
+      "name": "Launch Customer Web with server.js",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start-customer-web"]
+    },
+    {
+      "name": "Launch Outfitter Web",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/outfitter-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"]
+    },
+    {
+      "name": "Launch CI-CD Outfitter Web",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/outfitter-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["serve-cicd"]
+    },
+    {
+      "name": "Launch Rocket Web",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/rocket-web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test Services File",
+      "cwd": "${workspaceRoot}/packages/services",
+      "runtimeExecutable": "pa-config",
+      "runtimeArgs": ["-a=services", "-v=none", "-o=.env.js", "node", "-r", "ts-node/register"],
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "//1": "Only needed at top of tree",
+      "outFiles": ["${workspaceFolder}/**/*.js", "!**/node_modules/**", "${workspaceFolder}/packages/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test Rest Backend File",
+      "cwd": "${workspaceFolder}/backend",
+      "runtimeExecutable": "pa-config",
+      "runtimeArgs": ["-a=backend", "-v=none", "-o=.env.js", "node", "-r", "./preload-sentry", "-r", "ts-node/register"],
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "outFiles": ["${workspaceFolder}/**/*.js", "!**/node_modules/**", "${workspaceFolder}/packages/**/*.js"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Server",
+      "outputCapture": "std",
+      "cwd": "${workspaceFolder}/backend",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start-debug"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Queue processor",
+      "outputCapture": "std",
+      "cwd": "${workspaceFolder}/queue-processor",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start-debug"],
+      "outFiles": ["${workspaceFolder}/**/*.js", "!**/node_modules/**", "${workspaceFolder}/packages/**/*.js"],
+      "stopOnEntry": false
+    }
+  ]
+}
+
+
+// .vscode/settings.json
+{
+  "cSpell.words": [
+    "ADMINWEB",
+    "adventurecheck",
+    "Alteryx",
+    "Anoka",
+    "APIM",
+    "ARRAYAGG",
+    "arrivalhq",
+    "autoqual",
+    "beartest",
+    "BODID",
+    "Bruss",
+    "Cacheable",
+    "cachify",
+    "camelcase",
+    "campaignmanagement",
+    "Chargeback",
+    "chargebacks",
+    "Checkly",
+    "checklyoutfitter",
+    "checklysxstestproduct",
+    "CICD",
+    "Cloudinary",
+    "Cloudops",
+    "Colestock",
+    "cportal",
+    "CSID",
+    "Csize",
+    "datetime",
+    "DBDOCS",
+    "DBML",
+    "DDTHH",
+    "deepl",
+    "devicenumber",
+    "dispositioned",
+    "dompurify",
+    "donotsendemail",
+    "ecommerce",
+    "eins",
+    "Enroute",
+    "exbibyte",
+    "Exops",
+    "experienceops",
+    "falsey",
+    "flushall",
+    "fontawesome",
+    "formik",
+    "fortawesome",
+    "growsumo",
+    "gstest",
+    "heroicons",
+    "hgetall",
+    "hidechatbot",
+    "hmget",
+    "hmset",
+    "ibmi",
+    "Ilya's",
+    "IMCR",
+    "IMEI",
+    "ipaddr",
+    "JWKS",
+    "kibibyte",
+    "Klaviyo",
+    "languagedetector",
+    "Lindeman",
+    "Linxup",
+    "livemode",
+    "mailinator",
+    "mapbox",
+    "marcatopartners",
+    "marketingcoupons",
+    "mebibyte",
+    "Mgmt",
+    "MPWR",
+    "Multicomplete",
+    "objlen",
+    "Offroad",
+    "onumber",
+    "onwarn",
+    "ORDWAY",
+    "ostring",
+    "outfitterrating",
+    "Parens",
+    "Partnerstack",
+    "POACAMPAIGNS",
+    "POARENTALS",
+    "poladv",
+    "POLARISCLOUDOPS",
+    "polarisexops",
+    "POLARISOPS",
+    "Posthook",
+    "Powersports",
+    "precache",
+    "precached",
+    "precaching",
+    "Precertified",
+    "Prerendered",
+    "Prerendering",
+    "preride",
+    "Priceable",
+    "Promocode",
+    "querystringify",
+    "rainforest",
+    "rainforestselectmember",
+    "ridersafety",
+    "sbva",
+    "Sendgrid",
+    "setex",
+    "sonner",
+    "staticmap",
+    "Substatus",
+    "swiper",
+    "tebibyte",
+    "tele",
+    "Telematics",
+    "tesults",
+    "Timeslot",
+    "Timestream",
+    "twiml",
+    "TYPEFORM",
+    "ULTRALOW",
+    "Uncategorized",
+    "Unresolve",
+    "upsert",
+    "urlset",
+    "USDL",
+    "uuidv",
+    "versionid",
+    "waybook",
+    "WEBEVOLVE",
+    "webfonts",
+    "WEBWAIVER",
+    "Wishlisted",
+    "Woot",
+    "xauth",
+    "XPEDITION",
+    "yrisk"
+  ],
+  "prettier.configPath": ".prettierrc",
+  "prettier.requireConfig": true,
+  "editor.formatOnSave": true,
+  "files.associations": {
+    ".env.js": "javascript"
+  }
+}
+
+// .vscode/tasks.json
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"path": "backend",
+			"label": "backend - pnpm: start",
+			"detail": "start the backend",
+			"problemMatcher": [],
+			"script": "start"
+		},
+		{
+			"type": "npm",
+			"path": "customer-web",
+			"label": "customer-web - pnpm: dev",
+			"detail": "start the customer-web",
+			"problemMatcher": [],
+			"script": "dev"
+		},
+		{
+			"type": "npm",
+			"path": "packages/services",
+			"label": "packages/services - pnpm: migrate",
+			"detail": "migrate local database",
+			"problemMatcher": [],
+			"script": "migrate"
+		},
+		{
+			"type": "npm",
+			"path": "outfitter-web",
+			"label": "outfitter-web - pnpm: dev",
+			"detail": "start the outfitter-web",
+			"problemMatcher": [],
+			"script": "dev"
+		},
+	]
+}
+
+
+// ai-cli.js
+import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
+
+try {
+  const count = await uploadCodebase()
+  console.log(`✅ Uploaded ${count} file(s) to vector store.`)
+} catch (err) {
+  console.error('❌ Failed to upload codebase:', err.message)
+}
+
+
+// bin/ai-cli
+#!/usr/bin/env node
+
+import('../ai-cli.js')
+
+
+// package.json
+{
+  "name": "ai-cli",
+  "version": "1.1.6",
+  "type": "module",
+  "bin": {
+    "ai-cli": "./bin/ai-cli"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "openai": "^5.8.2"
+  }
+}
+
+
+// push.sh
+#!/bin/bash
+./scripts/version-bump.sh
+
+
+// scripts/version-bump.sh
+#!/bin/bash
+
+set -e # Stop if any command fails
+
+PACKAGE_FILE="package.json"
+
+if [ ! -f "$PACKAGE_FILE" ]; then
+    echo "❌ package.json not found in current directory."
+    exit 1
+fi
+
+# Extract current version
+current_version=$(jq -r '.version' "$PACKAGE_FILE")
+IFS='.' read -r major minor patch <<<"$current_version"
+
+# Increment patch version
+new_patch=$((patch + 1))
+new_version="$major.$minor.$new_patch"
+
+# Update package.json with new version
+jq --arg new_version "$new_version" '.version = $new_version' "$PACKAGE_FILE" >tmp.$$.json && mv tmp.$$.json "$PACKAGE_FILE"
+
+# Git commit and push
+git add package.json
+git commit -m "🔖 version bump to $new_version"
+git push
+
+echo "✅ Version bumped to $new_version and pushed to remote."
+
+
+// src/history/history.js
+import fs from 'fs'
+import path from 'path'
+
+const LOG_FILE = path.resolve('log/ai.json')
+
+/**
+ * Append a log entry to the ai.json log file.
+ * @param {string} funcName
+ * @param {any} args
+ * @param {any} result
+ */
+export function putHistory(funcName, args, result) {
+  try {
+    const logs = fs.existsSync(LOG_FILE) ? JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8')) : []
+
+    logs.push({ funcName, arguments: args, result })
+
+    fs.mkdirSync(path.dirname(LOG_FILE), { recursive: true })
+    fs.writeFileSync(LOG_FILE, JSON.stringify(logs, null, 2))
+  } catch (err) {
+    console.warn(`[putHistory] Failed to write log: ${err.message}`)
+  }
+}
+
+/**
+ * Returns the most recently created vector store ID from the history log.
+ * @returns {string|undefined}
+ */
+export function getLatestVectorStoreId() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createVectorStore' && entry.result?.id)
+
+    return latest?.result?.id
+  } catch (err) {
+    console.warn(`[getLatestVectorStoreId] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
+
+// src/providers/ai.js
+import fs from 'fs'
+import path from 'path'
+import { toFile } from 'openai'
+import OpenAI from 'openai'
+import { putHistory } from '../history/history.js'
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VECTOR STORAGE
+
+export async function createVectorStore(name) {
+  const result = await openai.vectorStores.create({ name })
+  putHistory('createVectorStore', { name }, result)
+  return result.id
+}
+
+export async function uploadFilesToVectorStore(vectorStoreId, filePaths, metadata = {}) {
+  const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
+  await openai.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
+  const uploadedCount = files.length
+  putHistory('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, uploadedCount)
+  return uploadedCount
+}
+
+export async function listVectorStoreFiles(vectorStoreId) {
+  const result = await openai.vectorStores.files.list(vectorStoreId)
+  console.log(result.data)
+  return result.data.map((f) => ({
+    id: f.id,
+    name: f.file_name || f.filename || 'unknown',
+    status: f.status
+  }))
+}
+
+export async function deleteVectorStoreFile(vectorStoreId, fileId) {
+  const result = await openai.vectorStores.files.delete(vectorStoreId, fileId)
+  putHistory('deleteVectorStoreFile', { vectorStoreId, fileId }, result)
+  return result
+}
+
+export async function deleteVectorStore(vectorStoreId) {
+  const result = await openai.vectorStores.delete(vectorStoreId)
+  putHistory('deleteVectorStore', { vectorStoreId }, result)
+  return result
+}
+
+export async function getVectorStore(vectorStoreId) {
+  return await openai.vectorStores.retrieve(vectorStoreId)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ASSISTANT
+
+export async function createAssistant({ name, instructions, model, vectorStoreIds }) {
+  const result = await openai.assistants.create({
+    name,
+    instructions,
+    model,
+    tools: [{ type: 'file_search' }],
+    tool_resources: {
+      file_search: { vector_store_ids: vectorStoreIds }
+    }
+  })
+  putHistory('createAssistant', { name, instructions, model, vectorStoreIds }, result)
+  return result.id
+}
+
+export async function updateAssistantVectorStores(assistantId, vectorStoreIds) {
+  const result = await openai.assistants.update(assistantId, {
+    tool_resources: {
+      file_search: { vector_store_ids: vectorStoreIds }
+    }
+  })
+  putHistory('updateAssistantVectorStores', { assistantId, vectorStoreIds }, result)
+  return result
+}
+
+export async function deleteAssistant(assistantId) {
+  const result = await openai.assistants.delete(assistantId)
+  putHistory('deleteAssistant', { assistantId }, result)
+  return result
+}
+
+export async function getAssistant(assistantId) {
+  return await openai.assistants.retrieve(assistantId)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THREAD
+
+export async function createThread() {
+  const result = await openai.threads.create()
+  putHistory('createThread', {}, result)
+  return result.id
+}
+
+export async function askQuestion({ assistantId, threadId, question, onProgress = () => {} }) {
+  const run = await openai.threads.createAndRun({
+    assistant_id: assistantId,
+    thread: { id: threadId, messages: [{ role: 'user', content: question }] }
+  })
+
+  while (run.status === 'queued' || run.status === 'in_progress') {
+    onProgress(run.status)
+    await new Promise((r) => setTimeout(r, 1000))
+    const updated = await openai.runs.retrieve(run.thread_id, run.id)
+    Object.assign(run, updated)
+  }
+
+  const messages = await openai.messages.list(run.thread_id)
+  const reply = messages.data.find((m) => m.role === 'assistant')?.content?.[0]?.text?.value
+  putHistory('askQuestion', { assistantId, threadId, question }, reply)
+  return reply
+}
+
+export async function getThreadMessages(threadId) {
+  const res = await openai.messages.list(threadId)
+  return res.data
+}
+
+export async function deleteThread(threadId) {
+  const result = await openai.threads.delete(threadId)
+  putHistory('deleteThread', { threadId }, result)
+  return result
+}
+
+export async function estimateTokenCount({ threadId, prompt }) {
+  const messages = await openai.messages.list(threadId)
+  const text = messages.data.flatMap((m) => m.content.map((c) => c.text?.value || '')).join('\n') + '\n' + prompt
+  const tokens = encode(text).length
+  return tokens
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UTILS
+
+export async function prepareFileWithLogicalPath(filepath, logicalPath) {
+  const absPath = path.resolve(filepath)
+  const stream = fs.createReadStream(absPath)
+  return await toFile(stream, logicalPath)
+}
+
+export function getAllTextFilesInDirectory(dir, filterExt = ['.js', '.ts', '.json', '.md']) {
+  const files = []
+  function walk(current) {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const fullPath = path.join(current, entry.name)
+      if (entry.isDirectory()) walk(fullPath)
+      else if (filterExt.includes(path.extname(entry.name))) files.push(fullPath)
+    }
+  }
+  walk(dir)
+  return files
+}
+
+export function chunkArray(arr, size) {
+  const chunks = []
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size))
+  }
+  return chunks
+}
+
+
+// src/providers/files.js
+import { execSync } from 'child_process'
+import fs from 'fs'
+import { isBinary } from 'istextorbinary'
+
+/**
+ * Checks whether a file is binary using its content.
+ * @param {string} filePath
+ * @returns {boolean}
+ */
+function isBinaryFile(filePath) {
+  try {
+    const buffer = fs.readFileSync(filePath)
+    return isBinary(filePath, buffer)
+  } catch (err) {
+    console.warn(`⚠️ Skipping unreadable file "${filePath}": ${err.message}`)
+    return true // assume binary if unreadable
+  }
+}
+
+/**
+ * Returns latest Git commit hash and list of text-based (non-binary) tracked files.
+ * @returns {{ commit: string, files: string[] }}
+ */
+export function getGitTrackedFiles() {
+  try {
+    const filesOutput = execSync('git ls-files', { encoding: 'utf-8' })
+    const allFiles = filesOutput.split('\n').filter(Boolean)
+
+    const textFiles = allFiles.filter((file) => !isBinaryFile(file))
+
+    const commitHash = execSync('git rev-parse HEAD', { encoding: 'utf-8' }).trim()
+
+    return { commit: commitHash, files: textFiles }
+  } catch (err) {
+    console.error('❌ Failed to run git commands:', err.message)
+    return { commit: null, files: [] }
+  }
+}
+
+
+// src/use-cases/uploadCodebase.js
+import fs from 'fs'
+import path from 'path'
+import { getGitTrackedFiles } from '../providers/files.js'
+import { createVectorStore, uploadFilesToVectorStore } from '../providers/ai.js'
+
+/**
+ * Uploads all Git-tracked **text-based** project files as a single document to a new vector store.
+ * Skips binary files and `package-lock.json`.
+ *
+ * @returns {Promise<number>} number of files uploaded (always 1)
+ */
+export async function uploadCodebase() {
+  const { commit, files } = getGitTrackedFiles()
+
+  const tmpDir = path.resolve('.tmp')
+  const outputFile = path.join(tmpDir, `codebase-${commit.slice(0, 8)}.txt`)
+  fs.mkdirSync(tmpDir, { recursive: true })
+
+  const writeStream = fs.createWriteStream(outputFile)
+
+  for (const file of files) {
+    if (file === 'package-lock.json') continue
+
+    try {
+      const content = fs.readFileSync(file, 'utf-8')
+      writeStream.write(`\n\n// ${file}\n`)
+      writeStream.write(content)
+    } catch {
+      console.warn(`⚠️ Skipping binary or unreadable file: ${file}`)
+    }
+  }
+
+  writeStream.end()
+
+  await new Promise((res) => writeStream.on('finish', res))
+
+  const vectorStoreName = `codebase_${commit.slice(0, 8)}`
+  const vectorStoreId = await createVectorStore(vectorStoreName)
+
+  const uploadedCount = await uploadFilesToVectorStore(vectorStoreId, [outputFile], { commit })
+
+  console.log(`📦 Uploaded ${uploadedCount} file(s) to vector store: ${vectorStoreId}`)
+
+  return uploadedCount
+}

@@ -1,12 +1,10 @@
-import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
+import { simpleQuestion } from './src/use-cases/simpleQuestion.js'
 
-async function main() {
-  try {
-    const count = await uploadCodebase()
-    console.log(`✅ Uploaded ${count} file(s) to vector store.`)
-  } catch (err) {
-    console.error('❌ Failed to upload codebase:', err.message)
-  }
-}
+const question = 'create a README.md for this project'
 
-main()
+console.log(`❓ Asking: "${question}"`)
+
+const answer = await simpleQuestion(question)
+
+console.log('\n📝 Response:\n')
+console.log(answer)

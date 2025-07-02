@@ -40,3 +40,41 @@ export function getLatestVectorStoreId() {
     return undefined
   }
 }
+
+/**
+ * Returns the most recently created assistant ID from the history log.
+ * @returns {string|undefined}
+ */
+export function getLatestAssistantId() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createAssistant' && entry.result?.id)
+
+    return latest?.result?.id
+  } catch (err) {
+    console.warn(`[getLatestAssistantId] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
+/**
+ * Returns the most recently created thread ID from the history log.
+ * @returns {string|undefined}
+ */
+export function getLatestThreadId() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createThread' && entry.result?.id)
+
+    return latest?.result?.id
+  } catch (err) {
+    console.warn(`[getLatestThreadId] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
