@@ -1,85 +1,175 @@
+// ai.js with selective logging and full read-only support
 import fs from 'fs'
 import path from 'path'
-import OpenAI from 'openai'
+import { toFile } from 'openai'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const LOG_FILE = path.resolve('log/ai.json')
 
-export async function askQuestion({ question, fileIds = [], threadId = null }) {
-  const assistant = await openai.beta.assistants.create({
-    name: 'CLI Assistant',
-    instructions: 'You are a helpful assistant.',
-    model: 'gpt-4o',
-    tools: fileIds.length > 0 ? [{ type: 'file_search' }] : []
-  })
-
-  const thread = threadId ? { id: threadId } : await openai.beta.threads.create()
-
-  await openai.beta.threads.messages.create(thread.id, {
-    role: 'user',
-    content: question,
-    ...(fileIds.length > 0 && {
-      attachments: fileIds.map((file_id) => ({
-        file_id,
-        tools: [{ type: 'file_search' }]
-      }))
-    })
-  })
-
-  const run = await openai.beta.threads.runs.create(thread.id, {
-    assistant_id: assistant.id
-  })
-
-  let runResult
-  do {
-    await new Promise((r) => setTimeout(r, 1000))
-    runResult = await openai.beta.threads.runs.retrieve(run.id, { thread_id: thread.id })
-  } while (runResult.status === 'queued' || runResult.status === 'in_progress')
-
-  if (runResult.status === 'failed') {
-    throw new Error('❌ Assistant run failed')
-  }
-
-  const messages = await openai.beta.threads.messages.list(thread.id)
-  const answer = messages.data.find((m) => m.role === 'assistant')?.content?.[0]?.text?.value || ''
-
-  return { answer, threadId: thread.id }
-}
-
-export async function uploadFile(filePath) {
-  const absPath = path.resolve(filePath)
-  const stream = fs.createReadStream(absPath)
-
-  const uploaded = await openai.files.create({
-    file: stream,
-    purpose: 'assistants'
-  })
-
-  return {
-    id: uploaded.id,
-    name: uploaded.filename,
-    size: uploaded.bytes,
-    createdAt: new Date(uploaded.created_at * 1000).toLocaleString(),
-    purpose: uploaded.purpose
-  }
-}
-
-export async function listFiles() {
-  const result = await openai.files.list()
-  return result.data.map((file) => ({
-    id: file.id,
-    name: file.filename,
-    size: file.bytes,
-    createdAt: new Date(file.created_at * 1000).toLocaleString(),
-    purpose: file.purpose
-  }))
-}
-
-export async function deleteFile(fileId) {
+/**
+ * Append a log entry to the ai.json log file.
+ * @param {string} funcName
+ * @param {any} args
+ * @param {any} result
+ */
+function logAction(funcName, args, result) {
   try {
-    const res = await openai.files.delete(fileId)
-    return { deleted: true, id: res.id }
+    const logPath = LOG_FILE
+    const logs = fs.existsSync(logPath) ? JSON.parse(fs.readFileSync(logPath, 'utf-8')) : []
+    logs.push({ funcName, arguments: args, result })
+    fs.mkdirSync(path.dirname(logPath), { recursive: true })
+    fs.writeFileSync(logPath, JSON.stringify(logs, null, 2))
   } catch (err) {
-    console.warn(`❌ Failed to delete file ${fileId}: ${err.message}`)
-    return { deleted: false, error: err.message }
+    console.warn(`[logAction] Failed to write log: ${err.message}`)
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VECTOR STORAGE
+
+export async function createVectorStore(name) {
+  const result = await openai.beta.vectorStores.create({ name })
+  logAction('createVectorStore', { name }, result)
+  return result.id
+}
+
+export async function uploadFilesToVectorStore(vectorStoreId, filePaths) {
+  const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
+  await openai.beta.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
+
+  const uploadedCount = files.length
+  logAction('uploadFilesToVectorStore', { vectorStoreId, filePaths }, uploadedCount)
+  return uploadedCount
+}
+export async function listVectorStoreFiles(vectorStoreId) {
+  const result = await openai.beta.vectorStores.files.list(vectorStoreId)
+  return result.data.map((f) => ({ id: f.id, name: f.filename, status: f.status }))
+}
+
+export async function deleteVectorStoreFile(vectorStoreId, fileId) {
+  const result = await openai.beta.vectorStores.files.delete(vectorStoreId, fileId)
+  logAction('deleteVectorStoreFile', { vectorStoreId, fileId }, result)
+  return result
+}
+
+export async function deleteVectorStore(vectorStoreId) {
+  const result = await openai.beta.vectorStores.del(vectorStoreId)
+  logAction('deleteVectorStore', { vectorStoreId }, result)
+  return result
+}
+
+export async function getVectorStore(vectorStoreId) {
+  return await openai.beta.vectorStores.retrieve(vectorStoreId)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ASSISTANT
+
+export async function createAssistant({ name, instructions, model, vectorStoreIds }) {
+  const result = await openai.beta.assistants.create({
+    name,
+    instructions,
+    model,
+    tools: [{ type: 'file_search' }],
+    tool_resources: {
+      file_search: { vector_store_ids: vectorStoreIds }
+    }
+  })
+  logAction('createAssistant', { name, instructions, model, vectorStoreIds }, result)
+  return result.id
+}
+
+export async function updateAssistantVectorStores(assistantId, vectorStoreIds) {
+  const result = await openai.beta.assistants.update(assistantId, {
+    tool_resources: {
+      file_search: { vector_store_ids: vectorStoreIds }
+    }
+  })
+  logAction('updateAssistantVectorStores', { assistantId, vectorStoreIds }, result)
+  return result
+}
+
+export async function deleteAssistant(assistantId) {
+  const result = await openai.beta.assistants.del(assistantId)
+  logAction('deleteAssistant', { assistantId }, result)
+  return result
+}
+
+export async function getAssistant(assistantId) {
+  return await openai.beta.assistants.retrieve(assistantId)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THREAD
+
+export async function createThread() {
+  const result = await openai.beta.threads.create()
+  logAction('createThread', {}, result)
+  return result.id
+}
+
+export async function askQuestion({ assistantId, threadId, question, onProgress = () => {} }) {
+  const run = await openai.beta.threads.createAndRun({
+    assistant_id: assistantId,
+    thread: { id: threadId, messages: [{ role: 'user', content: question }] }
+  })
+
+  while (run.status === 'queued' || run.status === 'in_progress') {
+    onProgress(run.status)
+    await new Promise((r) => setTimeout(r, 1000))
+    const updated = await openai.beta.threads.runs.retrieve(run.thread_id, run.id)
+    Object.assign(run, updated)
+  }
+
+  const messages = await openai.beta.threads.messages.list(run.thread_id)
+  const reply = messages.data.find((m) => m.role === 'assistant')?.content?.[0]?.text?.value
+  logAction('askQuestion', { assistantId, threadId, question }, reply)
+  return reply
+}
+
+export async function getThreadMessages(threadId) {
+  const res = await openai.beta.threads.messages.list(threadId)
+  return res.data
+}
+
+export async function deleteThread(threadId) {
+  const result = await openai.beta.threads.del(threadId)
+  logAction('deleteThread', { threadId }, result)
+  return result
+}
+
+export async function estimateTokenCount({ threadId, prompt }) {
+  const messages = await openai.beta.threads.messages.list(threadId)
+  const text = messages.data.flatMap((m) => m.content.map((c) => c.text?.value || '')).join('\n') + '\n' + prompt
+  const tokens = encode(text).length
+  return tokens
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UTILS
+
+export async function prepareFileWithLogicalPath(filepath, logicalPath) {
+  const absPath = path.resolve(filepath)
+  const stream = fs.createReadStream(absPath)
+  return await toFile(stream, logicalPath)
+}
+
+export function getAllTextFilesInDirectory(dir, filterExt = ['.js', '.ts', '.json', '.md']) {
+  const files = []
+  function walk(current) {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const fullPath = path.join(current, entry.name)
+      if (entry.isDirectory()) walk(fullPath)
+      else if (filterExt.includes(path.extname(entry.name))) files.push(fullPath)
+    }
+  }
+  walk(dir)
+  return files
+}
+
+export function chunkArray(arr, size) {
+  const chunks = []
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size))
+  }
+  return chunks
 }
