@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { setProjectName, question, answer } from './src/history/history.js'
+import { setProjectName, question, answer, getLastUpdatedFileName } from './src/history/history.js'
 import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
 import { deleteCodebase } from './src/use-cases/deleteCodebase.js'
 import { ask } from './src/use-cases/ask.js'
@@ -34,23 +34,24 @@ function replaceFile(fileName, fileContent) {
   fs.writeFileSync(fileName, fileContent)
 }
 
-question(1)
+// console.log(question(0))
 // answer(1)
 //console.log(answer(0))
 // const q = loadAndClearQuestion()
+
 // const files = answer(0)
 //   .split(/\r?\n/)
 //   .filter((e) => !!e)
 // for (const f of files) {
 //   console.log(f)
-//   await ask(getFullContent(f))
+//   await ask(getFullContent(f), { action: 'getFullContent', fileName: f })
 // }
 
 // setProjectName('ai-cli')
 // await uploadCodebase()
 // await ask(q)
-// await ask(getFileList(q))
+// await ask(getFileList(q), { action: 'getFileList' })
 // console.log(answer(0))
-// replaceFile('README.md', answer(0))
+replaceFile(getLastUpdatedFileName(), answer(0))
 // await deleteCodebase()
 // cleanUp()

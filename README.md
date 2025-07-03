@@ -1,4 +1,4 @@
-# Project Name: Vector Store and Assistant Manager
+# OpenAI CLI Tool
 
 ## Overview
 

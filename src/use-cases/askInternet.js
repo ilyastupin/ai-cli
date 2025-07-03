@@ -1,12 +1,6 @@
 import { getSearchQuery } from '../providers/prompts.js'
 import { braveSearchToFile } from '../brave/brave.js'
-import {
-  getLatestVectorStoreId,
-  getLatestThreadId,
-  getProjectName,
-  getLatestAssistantId,
-  putQuestion
-} from '../history/history.js'
+import { getLatestVectorStoreId, getLatestThreadId, getProjectName, getLatestAssistantId } from '../history/history.js'
 import {
   createVectorStore,
   createThread,
@@ -67,9 +61,7 @@ async function ensureAssistantAndThread(name, instructions) {
 /**
  * Internet-enhanced answer using vector store context
  */
-export async function askWithWebSearchVector(question) {
-  putQuestion(question, { search: true })
-
+export async function askWithWebSearchVector(question, context = {}) {
   const query = await generateSearchQuery(question)
   const resultFile = await performBraveSearch(query)
 
@@ -77,15 +69,13 @@ export async function askWithWebSearchVector(question) {
   const uploadedCount = await uploadFilesToVectorStore(vectorStoreId, [resultFile])
   console.log(`📤 Uploaded ${uploadedCount} Brave result file(s) to vector store`)
 
-  return await ask(question, true)
+  return await askQuestion({ assistantId, threadId, question, context })
 }
 
 /**
  * Internet-enhanced answer using attached file context
  */
-export async function askWithWebSearchFile(question) {
-  putQuestion(question, { search: true })
-
+export async function askWithWebSearchFile(question, context = {}) {
   const query = await generateSearchQuery(question)
   const resultFile = await performBraveSearch(query)
 
@@ -101,16 +91,15 @@ export async function askWithWebSearchFile(question) {
     assistantId,
     threadId,
     question,
-    fileIds: [fileId]
+    fileIds: [fileId],
+    context
   })
 }
 
 /**
  * Internet-enhanced answer by appending raw search context directly into the prompt
  */
-export async function askWithWebSearchInline(question) {
-  putQuestion(question, { search: true })
-
+export async function askWithWebSearchInline(question, context = {}) {
   const query = await generateSearchQuery(question)
   const resultFile = await performBraveSearch(query)
 
@@ -130,7 +119,7 @@ export async function askWithWebSearchInline(question) {
   console.log(`🧵 Created temporary thread: ${threadId}`)
 
   const fullPrompt = `${question}\n\n---\n\nHere is some related context from web:\n\n${rawText.slice(0, 8000)}`
-  const reply = await askQuestion({ assistantId, threadId, question: fullPrompt })
+  const reply = await askQuestion({ assistantId, threadId, question: fullPrompt, context })
 
   await deleteThread(threadId)
   console.log(`🧹 Deleted temporary thread: ${threadId}`)

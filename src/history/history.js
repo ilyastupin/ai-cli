@@ -18,10 +18,6 @@ export function setProjectName(name) {
   putHistory('setProjectName', name)
 }
 
-export function putQuestion(question, metadata) {
-  putHistory('putQuestion', question, metadata)
-}
-
 export function getProjectName() {
   try {
     if (!fs.existsSync(LOG_FILE)) return undefined
@@ -212,4 +208,34 @@ function printHistoryEntry(funcName, n, extractor) {
   } catch (err) {
     console.error(`[${funcName}] Failed to read log: ${err.message}`)
   }
+}
+
+/**
+ * Finds the most recent `askQuestion` log entry with context.action === 'getFullContent'
+ * and returns the corresponding fileName.
+ *
+ * @returns {string} file name from the matching log entry
+ * @throws {Error} if no matching entry is found
+ */
+export function getLastUpdatedFileName() {
+  if (!fs.existsSync(LOG_FILE)) {
+    throw new Error(`No log file found at ${LOG_FILE}`)
+  }
+
+  const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+  const match = [...logs]
+    .reverse()
+    .find(
+      (entry) =>
+        entry.funcName === 'askQuestion' &&
+        entry.arguments?.context?.action === 'getFullContent' &&
+        typeof entry.arguments.context.fileName === 'string'
+    )
+
+  if (!match) {
+    throw new Error('No askQuestion entry with context.action === "getFullContent" and fileName found')
+  }
+
+  return match.arguments.context.fileName
 }

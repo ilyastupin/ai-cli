@@ -3,8 +3,7 @@ import {
   getLatestAssistantId,
   getLatestThreadId,
   getProjectName,
-  putHistory,
-  putQuestion
+  putHistory
 } from '../history/history.js'
 import { createAssistant, createThread, askQuestion, createVectorStore } from '../providers/ai.js'
 
@@ -16,9 +15,7 @@ import { createAssistant, createThread, askQuestion, createVectorStore } from '.
  * @param {boolean} internal - If true, skips logging the question to history.
  * @returns {Promise<string>} The assistant's reply.
  */
-export async function ask(question, internal = false) {
-  if (!internal) putQuestion(question, { search: false })
-
+export async function ask(question, context = {}) {
   let vectorStoreId = getLatestVectorStoreId()
   if (!vectorStoreId) {
     vectorStoreId = await createVectorStore(getProjectName())
@@ -50,7 +47,7 @@ export async function ask(question, internal = false) {
     console.log(`🔁 Reusing thread: ${threadId}`)
   }
 
-  const reply = await askQuestion({ assistantId, threadId, question })
+  const reply = await askQuestion({ assistantId, threadId, question, context })
 
   return reply
 }

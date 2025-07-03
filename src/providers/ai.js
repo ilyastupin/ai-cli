@@ -126,7 +126,7 @@ export async function createThread() {
  * @param {function} [params.onProgress] - Optional progress callback
  * @returns {Promise<string>} Assistant reply
  */
-export async function askQuestion({ assistantId, threadId, question, fileIds = [], onProgress = () => {} }) {
+export async function askQuestion({ assistantId, threadId, question, context = {}, fileIds = [], onProgress = () => {} }) {
   // Step 1: Add user message to thread, optionally with file attachments
   await openai.beta.threads.messages.create(threadId, {
     role: 'user',
@@ -158,7 +158,7 @@ export async function askQuestion({ assistantId, threadId, question, fileIds = [
     .map((m) => m.content?.[0]?.text?.value)
     .filter(Boolean)[0] // First assistant message is the latest
 
-  putHistory('askQuestion', { assistantId, threadId, question, fileIds }, reply)
+  putHistory('askQuestion', { assistantId, threadId, question, fileIds, context }, reply)
   return reply
 }
 
