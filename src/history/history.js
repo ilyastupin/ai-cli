@@ -173,7 +173,7 @@ export function checkIfDeleted(id) {
 }
 
 export function question(n = 0) {
-  return printHistoryEntry('putQuestion', n, (entry) => entry.arguments)
+  return printHistoryEntry('askQuestion', n, (entry) => entry.arguments.question)
 }
 
 export function answer(n = 0) {

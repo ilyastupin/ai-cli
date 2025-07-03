@@ -34,7 +34,7 @@ function replaceFile(fileName, fileContent) {
   fs.writeFileSync(fileName, fileContent)
 }
 
-// question(1)
+question(1)
 // answer(1)
 //console.log(answer(0))
 // const q = loadAndClearQuestion()
@@ -51,6 +51,6 @@ function replaceFile(fileName, fileContent) {
 // await ask(q)
 // await ask(getFileList(q))
 // console.log(answer(0))
-replaceFile('README.md', answer(0))
+// replaceFile('README.md', answer(0))
 // await deleteCodebase()
 // cleanUp()
