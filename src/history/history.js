@@ -3,18 +3,41 @@ import path from 'path'
 
 const LOG_FILE = path.resolve('log/ai.json')
 
-/**
- * Append a log entry to the ai.json log file.
- * @param {string} funcName
- * @param {any} args
- * @param {any} result
- */
+// ─────────────────────────────────────────────────────────────────────────────
+// Logging and Project Name
+
+export function setProjectName(name) {
+  try {
+    if (fs.existsSync(LOG_FILE)) {
+      fs.unlinkSync(LOG_FILE)
+    }
+  } catch (err) {
+    console.warn(`[setProjectName] Failed to delete log: ${err.message}`)
+  }
+
+  putHistory('setProjectName', name)
+}
+
+export function putQuestion(question, metadata) {
+  putHistory('putQuestion', metadata)
+}
+
+export function getProjectName() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+    const latest = [...logs].reverse().find((entry) => entry.funcName === 'setProjectName')
+    return typeof latest?.arguments === 'string' ? latest.arguments : undefined
+  } catch (err) {
+    console.warn(`[getProjectName] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
 export function putHistory(funcName, args, result) {
   try {
     const logs = fs.existsSync(LOG_FILE) ? JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8')) : []
-
     logs.push({ funcName, arguments: args, result })
-
     fs.mkdirSync(path.dirname(LOG_FILE), { recursive: true })
     fs.writeFileSync(LOG_FILE, JSON.stringify(logs, null, 2))
   } catch (err) {
@@ -22,18 +45,16 @@ export function putHistory(funcName, args, result) {
   }
 }
 
-/**
- * Returns the most recently created vector store ID from the history log.
- * @returns {string|undefined}
- */
+// ─────────────────────────────────────────────────────────────────────────────
+// Latest Entity IDs (with deletion check)
+
 export function getLatestVectorStoreId() {
   try {
     if (!fs.existsSync(LOG_FILE)) return undefined
-
     const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
-
-    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createVectorStore' && entry.result?.id)
-
+    const latest = [...logs]
+      .reverse()
+      .find((entry) => entry.funcName === 'createVectorStore' && entry.result?.id && !checkIfDeleted(entry.result.id))
     return latest?.result?.id
   } catch (err) {
     console.warn(`[getLatestVectorStoreId] Failed to read log: ${err.message}`)
@@ -41,18 +62,13 @@ export function getLatestVectorStoreId() {
   }
 }
 
-/**
- * Returns the most recently created assistant ID from the history log.
- * @returns {string|undefined}
- */
 export function getLatestAssistantId() {
   try {
     if (!fs.existsSync(LOG_FILE)) return undefined
-
     const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
-
-    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createAssistant' && entry.result?.id)
-
+    const latest = [...logs]
+      .reverse()
+      .find((entry) => entry.funcName === 'createAssistant' && entry.result?.id && !checkIfDeleted(entry.result.id))
     return latest?.result?.id
   } catch (err) {
     console.warn(`[getLatestAssistantId] Failed to read log: ${err.message}`)
@@ -60,21 +76,98 @@ export function getLatestAssistantId() {
   }
 }
 
-/**
- * Returns the most recently created thread ID from the history log.
- * @returns {string|undefined}
- */
 export function getLatestThreadId() {
   try {
     if (!fs.existsSync(LOG_FILE)) return undefined
-
     const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
-
-    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createThread' && entry.result?.id)
-
+    const latest = [...logs]
+      .reverse()
+      .find((entry) => entry.funcName === 'createThread' && entry.result?.id && !checkIfDeleted(entry.result.id))
     return latest?.result?.id
   } catch (err) {
     console.warn(`[getLatestThreadId] Failed to read log: ${err.message}`)
     return undefined
   }
+}
+
+export function findVectorStoreFileIdByName(nameSubstring) {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+    const latest = [...logs]
+      .reverse()
+      .find(
+        (entry) =>
+          entry.funcName === 'uploadFilesToVectorStore' &&
+          Array.isArray(entry.arguments?.filePaths) &&
+          Array.isArray(entry.result)
+      )
+
+    if (!latest) return undefined
+    const index = latest.arguments.filePaths.findIndex((p) => p.includes(nameSubstring))
+    if (index === -1) return undefined
+
+    const fileId = latest.result[index]
+    return checkIfDeleted(fileId) ? undefined : fileId
+  } catch (err) {
+    console.warn(`[findVectorStoreFileIdByName] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
+export async function getVectorAndAssistantCreations() {
+  if (!fs.existsSync(LOG_FILE)) return []
+  const entries = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+  if (!Array.isArray(entries)) throw new Error('Invalid log format: expected an array')
+
+  return entries.filter(
+    (entry) =>
+      (entry.funcName === 'createVectorStore' || entry.funcName === 'createAssistant') &&
+      entry.result?.id &&
+      !checkIfDeleted(entry.result.id)
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Deletion + Checks
+
+export async function deleteHistory() {
+  try {
+    await fs.promises.unlink(LOG_FILE)
+    console.log(`🗑️ Deleted log file: ${LOG_FILE}`)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.warn(`⚠️ Log file does not exist: ${LOG_FILE}`)
+    } else {
+      console.error(`❌ Failed to delete log file: ${err.message}`)
+      throw err
+    }
+  }
+}
+
+export function getAllDeletedIds() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return []
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+    const ids = []
+
+    for (const entry of logs) {
+      const args = entry.arguments
+      if (entry.funcName === 'deleteThread' && args?.threadId) ids.push(args.threadId)
+      if (entry.funcName === 'deleteVectorStoreFile' && args?.fileId) ids.push(args.fileId)
+      if (entry.funcName === 'deleteVectorStore' && args?.vectorStoreId) ids.push(args.vectorStoreId)
+      if (entry.funcName === 'deleteAssistant' && args?.assistantId) ids.push(args.assistantId)
+    }
+
+    return ids
+  } catch (err) {
+    console.warn(`[getAllDeletedIds] Failed to read or parse log: ${err.message}`)
+    return []
+  }
+}
+
+export function checkIfDeleted(id) {
+  const deletedIds = getAllDeletedIds()
+  return deletedIds.includes(id)
 }

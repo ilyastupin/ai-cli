@@ -1,0 +1,1356 @@
+# https://www.theguardian.com/world/2025/jun/21/israel-iran-war-outcome-us-analysis
+
+@font-face{font-family:"GH Guardian Headline";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Light.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Light.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Light.ttf) format("truetype");font-weight:300;font-style:normal;font-display:swap}@font-face{font-family:"Guardian Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Light.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Light.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Light.ttf) format("truetype");font-weight:300;font-style:normal;font-display:swap}@font-face{font-family:"GH Guardian Headline";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-LightItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-LightItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-LightItalic.ttf) format("truetype");font-weight:300;font-style:italic;font-display:swap}@font-face{font-family:"Guardian Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-LightItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-LightItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-LightItalic.ttf) format("truetype");font-weight:300;font-style:italic;font-display:swap}@font-face{font-family:"GH Guardian Headline";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Medium.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Medium.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Medium.ttf) format("truetype");font-weight:500;font-style:normal;font-display:swap}@font-face{font-family:"Guardian Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Medium.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Medium.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Medium.ttf) format("truetype");font-weight:500;font-style:normal;font-display:swap}@font-face{font-family:"GH Guardian Headline";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-MediumItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-MediumItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-MediumItalic.ttf) format("truetype");font-weight:500;font-style:italic;font-display:swap}@font-face{font-family:"Guardian Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-MediumItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-MediumItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-MediumItalic.ttf) format("truetype");font-weight:500;font-style:italic;font-display:swap}@font-face{font-family:"GH Guardian Headline";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Bold.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Bold.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Bold.ttf) format("truetype");font-weight:700;font-style:normal;font-display:swap}@font-face{font-family:"Guardian Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-Bold.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Bold.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-Bold.ttf) format("truetype");font-weight:700;font-style:normal;font-display:swap}@font-face{font-family:"GH Guardian Headline";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-BoldItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-BoldItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-BoldItalic.ttf) format("truetype");font-weight:700;font-style:italic;font-display:swap}@font-face{font-family:"Guardian Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/noalts-not-hinted/GHGuardianHeadline-BoldItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-BoldItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-headline/latin1-not-hinted/GHGuardianHeadline-BoldItalic.ttf) format("truetype");font-weight:700;font-style:italic;font-display:swap}@font-face{font-family:GuardianTextEgyptian;src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-Regular.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-Regular.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-Regular.ttf) format("truetype");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"Guardian Text Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-Regular.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-Regular.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-Regular.ttf) format("truetype");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:GuardianTextEgyptian;src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-RegularItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-RegularItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-RegularItalic.ttf) format("truetype");font-weight:400;font-style:italic;font-display:swap}@font-face{font-family:"Guardian Text Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-RegularItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-RegularItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-RegularItalic.ttf) format("truetype");font-weight:400;font-style:italic;font-display:swap}@font-face{font-family:GuardianTextEgyptian;src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-Bold.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-Bold.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-Bold.ttf) format("truetype");font-weight:700;font-style:normal;font-display:swap}@font-face{font-family:"Guardian Text Egyptian Web";src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-Bold.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-Bold.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-Bold.ttf) format("truetype");font-weight:700;font-style:normal;font-display:swap}@font-face{font-family:GuardianTextEgyptian;src:url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/noalts-not-hinted/GuardianTextEgyptian-BoldItalic.woff2) format("woff2"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-BoldItalic.woff) format("woff"),url(https://assets.guim.co.uk/static/frontend/fonts/guardian-textegyptian/latin1-not-hinted/GuardianTextEgyptian-BoldItalic.ttf) format("truetype");font-weight:700;font-style:italic;font-display:swap}@font-face
+
+
+# https://www.nytimes.com/2025/06/29/world/middleeast/iran-israel-war-future.html
+
+Please enable JS and disable any ad blockervar dd={'rt':'c','cid':'AHrlqAAAAAMAPpYaXSsZ8q0ALYJTXg==','hsh':'499AE34129FA4E4FABC31582C3075D','t':'bv','qp':'','s':17439,'e':'f15f63d51258bb128b584edb3854d92cdec792c8a08362e53882f21660bf927e','host':'geo.captcha-delivery.com','cookie':'nLxwdlA0ElrSa1X1OZAl562Swdec2sjvFXIDlnNbwZWXcsXX4ZswZjvdMM8mcB46620EcZy70MoK9uVJYAVztnI9UAmb27gW909dKMBrS2eOKaAJtwrEO3NKks2oc8L_'}
+
+
+# https://lansinginstitute.org/2025/06/13/escalating-tensions-between-iran-and-israel-june-2025-timing-scenarios-and-global-implications/
+
+Skip to content
+
+	
+	
+				
+			Robert Lansing Institute
+					
+						
+						
+					
+			
+						
+				
+																
+															
+															
+				
+					
+		
+				
+			
+						
+				
+							
+							
+					
+						Twitter
+											
+				
+							
+					
+						Linkedin
+											
+				
+					
+						
+				
+				
+						
+					
+			
+						
+				
+								
+				
+					Menu
+					
+											
+				
+				
+					Home
+Who We Are
+
+	About Robert Lansing
+	What we do
+	Research
+
+
+Analysis
+
+	Conflict
+	Corruption
+	Democracy
+	Economy
+	Energy
+	Drug trafficking
+	Food Security
+	Geopolitics
+	Governance
+	Intelligence ops
+	Opinion
+	Peacekeeping
+	Propaganda and Disinformation
+	Psyops
+	Terrorism
+	Warfare
+
+
+Must Read
+
+	Analytic papers
+	Infographics we recommend
+
+
+ 
+				
+			
+							
+				
+					
+		
+				
+			
+						
+				
+							
+	
+		
+
+	
+	
+				
+			
+					
+				
+		
+	
+
+	
+	
+	
+        
+			
+			
+			
+		
+	
+
+	
+	
+	
+				
+			
+					
+				
+		
+	
+
+	
+	
+	
+
+		
+
+			
+
+			
+			
+				
+			
+		
+	
+	
+	
+	
+			
+		
+			
+				
+			
+		
+		
+			
+		
+	
+	
+
+	
+
+	
+	
+
+		
+		
+		
+
+		
+	
+
+	
+	
+
+
+	
+		
+
+	
+	
+	
+	
+
+	
+		
+	
+
+	
+	
+	
+		Generic selectors
+		
+			
+				
+				
+			
+			
+				Exact matches only			
+		
+		
+			
+				
+				
+			
+			
+				Search in title			
+		
+		
+			
+				
+				
+			
+			
+				Search in content			
+		
+		
+			
+			
+		
+	
+	
+		Post Type Selectors
+					
+				
+			
+				
+	
+		
+							Filter by Categories
+						
+									
+						
+							
+							
+						
+						
+							-						
+					
+										
+						
+							
+							
+						
+						
+							climate change						
+					
+										
+						
+							
+							
+						
+						
+							Conflict						
+					
+										
+						
+							
+							
+						
+						
+							Corruption						
+					
+										
+						
+							
+							
+						
+						
+							Coup						
+					
+										
+						
+							
+							
+						
+						
+							Democracy						
+					
+										
+						
+							
+							
+						
+						
+							Drug trafficking						
+					
+										
+						
+							
+							
+						
+						
+							ecology						
+					
+										
+						
+							
+							
+						
+						
+							Economy						
+					
+										
+						
+							
+							
+						
+						
+							Energy						
+					
+										
+						
+							
+							
+						
+						
+							Estimates						
+					
+										
+						
+							
+							
+						
+						
+							Food Security						
+					
+										
+						
+							
+							
+						
+						
+							Geoeconomics						
+					
+										
+						
+							
+							
+						
+						
+							Geopolitics						
+					
+										
+						
+							
+							
+						
+						
+							Governance						
+					
+										
+						
+							
+							
+						
+						
+							Healthcare						
+					
+										
+						
+							
+							
+						
+						
+							ideology						
+					
+										
+						
+							
+							
+						
+						
+							Intelligence ops						
+					
+										
+						
+							
+							
+						
+						
+							migration						
+					
+										
+						
+							
+							
+						
+						
+							Must Read Infographics						
+					
+										
+						
+							
+							
+						
+						
+							Must Read PDF						
+					
+										
+						
+							
+							
+						
+						
+							National Security						
+					
+										
+						
+							
+							
+						
+						
+							Nonproliferation						
+					
+										
+						
+							
+							
+						
+						
+							Opinion						
+					
+										
+						
+							
+							
+						
+						
+							Peacekeeping						
+					
+										
+						
+							
+							
+						
+						
+							profile						
+					
+										
+						
+							
+							
+						
+						
+							Propaganda and Disinformation						
+					
+										
+						
+							
+							
+						
+						
+							Psyops						
+					
+										
+						
+							
+							
+						
+						
+							Situation Reports						
+					
+										
+						
+							
+							
+						
+						
+							Terrorism						
+					
+										
+						
+							
+							
+						
+						
+							War crimes						
+					
+										
+						
+							
+							
+						
+						
+							Warfare						
+					
+					
+			
+		
+		
+	
+
+						
+				
+					
+		
+					
+		
+					
+		
+					
+		
+				
+						
+					
+			
+						
+				
+								
+					
+											
+				
+			
+				
+				
+					
+						
+							
+								Home
+Who We Are
+
+	About Robert Lansing
+	What we do
+	Research
+
+
+Analysis
+
+	Conflict
+	Corruption
+	Democracy
+	Economy
+	Energy
+	Drug trafficking
+	Food Security
+	Geopolitics
+	Governance
+	Intelligence ops
+	Opinion
+	Peacekeeping
+	Propaganda and Disinformation
+	Psyops
+	Terrorism
+	Warfare
+
+
+Must Read
+
+	Analytic papers
+	Infographics we recommend
+
+
+							
+							
+															
+						
+					
+				
+			
+							
+				
+					
+		
+				
+			
+						
+				
+																
+															
+															
+				
+					
+		
+				
+			
+						
+				
+							
+							
+					
+						Twitter
+											
+				
+							
+					
+						Linkedin
+											
+				
+					
+						
+				
+					
+		
+					
+		
+				
+						
+					
+			
+						
+				
+							
+			
+		
+						
+				
+					
+		
+					
+		
+				
+				
+
+				
+
+	
+		
+
+		
+
+
+	
+
+		
+		
+
+			
+
+
+
+	
+
+
+	Posted inConflict Geoeconomics Geopolitics
+
+
+
+
+	
+	
+		Escalating Tensions Between Iran and Israel (June 2025): Timing, Scenarios, and Global Implications	
+
+
+June 13, 2025
+
+	
+Recent weeks have seen a dramatic intensification of tensions between Iran and Israel, marked by tit-for-tat military threats, cyberattacks, and covert operations across the region. With the specter of direct confrontation looming larger than ever.
+
+
+
+II. Why Now? Strategic Timing Behind the Escalation
+
+
+
+1. Post-Gaza Realignment
+
+
+
+
+Israel has emerged from the Gaza conflict with renewed assertiveness, targeting Iranian-backed networks in Syria and Lebanon.
+
+
+
+Iran, facing diminished regional prestige, is attempting to reassert deterrence via asymmetric escalation (militias, cyber, naval threats in the Gulf).
+
+
+
+
+2. Iran’s Domestic Crisis
+
+
+
+
+Iran’s economy is under intense strain due to sanctions, inflation, and rising internal dissent.
+
+
+
+Nationalist rhetoric and external confrontation help the regime divert attention from domestic unrest.
+
+
+
+
+3. Regional Power Competition
+
+
+
+
+Saudi-Israeli normalization, supported quietly by Washington, threatens Iran’s regional strategy of isolation.
+
+
+
+Tehran sees an urgent need to signal its red lines and disrupt potential alignment of Arab states with Israel.
+
+
+
+
+4. U.S. Election Calculations
+
+
+
+
+Both sides may be maneuvering in anticipation of the 2024 U.S. elections (with delayed results now settling under the Trump administration in 2025).
+
+
+
+Iran may test U.S. resolve under Trump 2.0, while Israel seeks guarantees before any shift in American posture toward “restraint first.”
+
+
+
+
+III. Implications and Scenarios
+
+
+
+Scenario 1: Controlled Escalation (Most Likely)
+
+
+
+
+Covert attacks, targeted strikes in Syria, Iraq, and possibly the Red Sea.
+
+
+
+No full-scale war, but prolonged instability involving Hezbollah, IRGC proxies, and Israeli special operations.
+
+
+
+Cyberattacks and shipping disruptions continue to spike.
+
+
+
+
+Implications:
+
+
+
+
+Weakened commercial confidence in Gulf and Eastern Mediterranean shipping lanes.
+
+
+
+Rising insurance and energy costs, especially if tankers are hit.
+
+
+
+
+Scenario 2: Regional War (High-Risk, Low-Probability)
+
+
+
+
+Miscalculation or false-flag incident triggers full confrontation, possibly involving Lebanon, Syria, and even Iraq.
+
+
+
+Israel strikes key IRGC facilities; Iran responds with drone/missile salvos.
+
+
+
+
+Implications:
+
+
+
+
+Disruption of global oil flows from the Strait of Hormuz.
+
+
+
+Massive refugee flows in Lebanon and Syria.
+
+
+
+Market panic, oil prices spike to $150+/barrel.
+
+
+
+
+Scenario 3: Strategic De-escalation via Third Parties
+
+
+
+
+Turkey, Qatar, Oman, or even Russia mediate partial stand-down.
+
+
+
+Temporary de-escalation, but root tensions remain.
+
+
+
+
+Implications:
+
+
+
+
+Short-term calm, but longer-term rearmament by all sides.
+
+
+
+Limited opening for diplomacy, especially on nuclear issues.
+
+
+
+
+IV. Impact on Iran’s Internal Politics
+
+
+
+
+Increased militarization of the regime. The IRGC gains greater influence, using the crisis to suppress dissent.
+
+
+
+Economic blowback: sanctions tighten, currency plunges, and middle-class discontent rises.
+
+
+
+Nationalist backlash: rallies around the flag may temporarily help regime legitimacy, but prolonged confrontation will further isolate the population and spark fresh protests by winter.
+
+
+
+
+V. Impact on Israel
+
+
+
+
+Military overstretch risk: simultaneous operations in Gaza, Lebanon, and Syria.
+
+
+
+Internal political polarization: divisions over strategy (moderation vs. total deterrence) re-emerge in the Knesset.
+
+
+
+Economic vulnerability: high-tech and tourism sectors suffer amid security concerns.
+
+
+
+
+VI. U.S. Reaction: Strategic Dilemma
+
+
+
+
+Trump administration appears divided:
+
+Hawks (Pompeo-type faction) favor green-lighting Israeli strikes and using the crisis to tighten pressure on Iran.
+
+
+
+Realists prefer avoiding regional war that could derail economic recovery and U.S. Gulf partnerships.
+
+
+
+
+
+
+Likely U.S. Actions:
+
+
+
+
+Supportive rhetoric for Israel but behind-the-scenes pressure for moderation.
+
+
+
+Expanded naval presence in the Gulf (CENTCOM).
+
+
+
+Quiet engagement with Gulf states and Turkey to limit escalation.
+
+
+
+Use of sanctions as “pressure valve” — e.g., targeting Iranian cyber and drone units.
+
+
+
+
+VII. Global and Economic Impacts
+
+
+
+SectorEffectOil marketsVolatility expected; potential short-term spike >$100Global shippingRerouting or delay in Red Sea & Hormuz; higher insurance ratesStock marketsFlight to safe assets; regional equities slumpChina & IndiaStrategic dilemma — both rely on Gulf energy and tradeRussiaQuietly benefits if oil spikes, may encourage instability
+
+
+
+Strategic Outlook
+
+
+
+The Iran-Israel confrontation in mid-2025 reflects deeper systemic shifts: the collapse of deterrence norms, regional realignments, and an international environment where great power competition discourages mediation. While full-scale war remains avoidable, the risks of escalation and entrenchment are real.
+
+
+
+Strategic Recommendations:
+
+
+
+
+For U.S.: Balance deterrence with diplomatic signaling; avoid empowering IRGC hardliners by overreaction.
+
+
+
+For EU: Reinforce naval presence in the Red Sea; explore backchannel dipl
+
+
+# https://www.atlanticcouncil.org/blogs/new-atlanticist/after-israels-strikes-on-iran-these-four-questions-could-determine-the-middle-easts-future/
+
+function expand(param) {
+		param.style.display = (param.style.display == "none") ? "block" : "none";
+	}
+	function read_toggle(id, more, less) {
+		el = document.getElementById("readlink" + id);
+		el.innerHTML = (el.innerHTML == more) ? less : more;
+		expand(document.getElementById("read" + id));
+	}
+	        
+					
+        	
+	var ajaxurl = '/wp-admin/admin-ajax.php';
+	
+	function tooltipsdate()
+	{
+			var d=new Date();
+			str='';
+			str +=d.getFullYear()+'-';
+			str +=d.getMonth()+1+'-';
+			str +=d.getDate()+'-';
+			str +=d.getHours()+'-';
+			str +=d.getMinutes()+'-';
+			str +=d.getSeconds();
+			return str; 
+	}
+	var nowtime = tooltipsdate();
+	var tooltipsClientIP = '68.221.75.29, 104.156.92.72';
+
+	function toolTips(whichID,theTipContent,toolTipPostID,theTipTitle, toolTipCustomizedStyle) 
+	{
+				if (typeof toolTipPostID==='undefined')
+		{
+			toolTipPostID = '0';
+		}
+
+		toolTipPostStyleName = 'ui-wordpress-tooltip-pro';
+		if (typeof toolTipCustomizedStyle==='undefined')
+		{
+			toolTipCustomizedStyle = 'ui-wordpress-tooltip-pro';
+		}
+
+			jQuery(whichID).qtip
+			(
+				{
+					content:
+					{
+													text:theTipContent,
+											},
+    				postid:toolTipPostID,  					
+						style:
+	   					{
+							classes:'defaults'
+							
+	    				},
+											position:
+    				{
+    					viewport: jQuery(window),
+    					my: 'bottom center',
+    					at: 'top center'    				},
+					show:
+						{
+												delay:0,
+						event: 'mouseover',
+												effect: function() {
+										                jQuery(this).fadeTo(200, 1);
+			                		jQuery('.qtip iframe').attr('id','stopplayingyoutube');
+			                		oldsrc =  jQuery("#stopplayingyoutube").attr("oldsrc");
+
+			                		if ('undefined' == oldsrc)
+			                		{
+
+			                		}
+			                		else
+			                		{
+
+			                			jQuery("#stopplayingyoutube").attr("src", jQuery("#stopplayingyoutube").attr("oldsrc"));
+			                		}
+			            }
+						},
+					hide:
+												
+									{
+										event: 'mouseout',
+										effect: function(offset) 
+										{
+											jQuery('.qtip iframe').attr('id','stopplayingyoutube');
+								 			jQuery("#stopplayingyoutube").attr("oldsrc", jQuery("#stopplayingyoutube").attr("src"));
+											jQuery("#stopplayingyoutube").attr("src", '');
+								            jQuery(this).slideDown(100); // "this" refers to the tooltip
+								        }
+									}
+													
+				}
+			)
+	}
+
+	
+	
+	.tooltips_table .tooltipsall
+	{
+		border-bottom:none !important;
+	}
+	.tooltips_table span {
+		color: inherit;
+	}
+	.qtip-content .tooltipsall
+	{
+		border-bottom:none !important;
+		color: inherit !important;
+	}
+	
+		
+	.tooltipsall:hover {
+		color: #f2783e;
+	}
+	
+			
+			.tooltipsall
+			{
+		    	border-bottom:2px dotted #888;
+			}		
+		
+			
+			.navitems a
+			{
+				text-decoration: none !important;
+			}
+		
+		
+
+
+
+	var dataLayer_content = {"pageTitle":"After Israel’s strikes on Iran, these four questions could determine the Middle East’s future - Atlantic Council","pagePostType":"post","pagePostType2":"single-post","pageCategory":["new-atlanticist"],"pagePostAuthor":"jcookson","pagePostDate":"June 13, 2025","pagePostDateYear":2025,"pagePostDateMonth":6,"pagePostDateDay":13,"pagePostDateDayName":"Friday","pagePostDateHour":11,"pagePostDateMinute":0,"pagePostDateIso":"2025-06-13T11:00:21-04:00","pagePostDateUnix":1749812421,"pagePostTerms":{"category":["New Atlanticist"],"regions":["Iran","Israel","Middle East"],"programs":["Rafik Hariri Center &amp; Middle East programs"],"content-type":["New Atlanticist"],"meta":{"footnotes":"","promote_content":0,"custom_twitter_message":"","related_experts":"a:1:{i:0;s:6:\"513946\";}","author_alias":"Jonathan Panikoff","author_linked_to_expert":1,"expert_author":"a:1:{i:0;s:6:\"513946\";}","banner_type":"standard","banner_image":"","vimeo_url":"","display_video_instead_of_image":0,"hide_featured_video_on_single_post":0,"hide_post_date":0,"keypoint_title":"The Take","keypoints":"","further_reading":"a:3:{i:0;s:6:\"853458\";i:1;s:6:\"853550\";i:2;s:6:\"850495\";}","selectedTooltipStyle":"","tooltipsforforms":"","disable_to_this_page":"","remove_tooltips_style_js_from_this_page":"","disable_specific_tooltips_to_this_page":"","delay_execution_of_tooltip_in_page":"","enable_advance_tooltip_shortcode":"","toolstipssynonyms":"","toolstipsfullvideourl":"","toolstipsyoutubevideo":"","toolstipsyoutubeheight":"","toolstipsyoutubewidth":"","toolstipbulletscreentag":""}},"postID":853581,"postFormat":"standard"};
+	dataLayer.push( dataLayer_content );
+
+
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WDZXTM6');
+
+
+		
+		(function(h,o,t,j,a,r){
+			h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+			h._hjSettings={hjid:3116116,hjsv:5};
+			a=o.getElementsByTagName('head')[0];
+			r=o.createElement('script');r.async=1;
+			r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+			a.appendChild(r);
+		})(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+		
+		
+
+[id^=sb_youtube_].sb_youtube .sby_ls_message { font-size: 15px !important; }
+
+
+
+
+
+
+
+*[id^='readlink'] {
+ font-weight: normal;
+ color: #000000;
+ background: #ffffff;
+ padding: 0px;
+ border-bottom: 1px solid #000000;
+ -webkit-box-shadow: none !important;
+ box-shadow: none !important;
+ -webkit-transition: none !important;
+}
+
+*[id^='readlink']:hover {
+ font-weight: normal;
+ color: #191919;
+ padding: 0px;
+ border-bottom: 1px solid #000000;
+}
+
+*[id^='readlink']:focus {
+ outline: none;
+ color: #000000;
+}
+
+
+		
+			div.general-embed-bigger {
+	font-size: 2em;
+}		
+		
+
+
+
+  
+    
+      Share
+      
+        Close
+        
+      
+    
+    
+  
+  Mail
+
+
+  
+  Facebook
+
+
+  
+  Twitter / X
+
+
+  
+  LinkedIn
+
+  
+
+
+
+	
+    
+			
+				
+					
+													
+											
+				
+				InsightIssue briefs and reportsIssue briefs and reportsOur programs and centers deliver in-depth, highly relevant issue briefs and reports that break new ground, shift opinions, and set agendas on public policy, with a focus on advancing debates by integrating foundational research and analysis with concrete policy solutions.
+Fast ThinkingFast ThinkingWhen major global news breaks, the Atlantic Council’s experts have you covered—delivering their sharpest rapid insight and forward-looking analysis direct to your inbox.
+New AtlanticistNew AtlanticistNew Atlanticist is where top experts and policymakers at the Atlantic Council and beyond offer exclusive insight on the most pressing global challenges—and the United States’ role in addressing them alongside its allies and partners.
+Inflection PointsInflection PointsA weekly column by Atlantic Council President and CEO Frederick Kempe, Inflection Points focuses on the global challenges facing the United States and how to best address them.
+UkraineAlertUkraineAlertUkraineAlert is a comprehensive online publication that provides regular news and analysis on developments in Ukraine’s politics, economy, civil society, and culture. UkraineAlert sources analysis and commentary from a wide-array of thought-leaders, politicians, experts, and activists from Ukraine and the global community.
+MENASourceMENASourceMENASource offers the latest news from across the Middle East, combined with commentary by contributors, interviews with emerging players, multi-media content, and independent analysis from fellows and staff.
+EconographicsEconographicsEconographics provides an in-depth look at trends in the global economy utilizing state-of-the-art data visualization tools.
+More sectionsAfricaSource
+EnergySource
+GeoTech Cues
+IranSource
+TurkeySource
+	
+
+
+
+EventsUpcoming events
+AC Front Page
+Galas and flagship events
+
+
+ACTV
+IssuesPolitics & DiplomacySub-issuesAll Politics & Diplomacy
+Corruption
+Democratic Transitions
+Elections
+Freedom and Prosperity
+G20
+International Norms
+Media
+Political Reform
+Rule of Law
+International Organizations
+United Nations
+	
+
+Security & DefenseSub-issuesAll Security & Defense
+Arms Control
+Conflict
+Defense Industry
+Defense Policy
+Defense Technologies
+Extremism
+Intelligence
+National Security
+NATO
+Non-Traditional Threats
+Nuclear Deterrence
+Nuclear Nonproliferation
+Peacekeeping and Peacebuilding
+Security Partnerships
+Terrorism
+	
+
+Economy & BusinessSub-issuesAll Economy & Business
+Digital Currencies
+Digital Policy
+Economic Sanctions
+Eurozone
+Financial Crimes & Illicit Trade
+Financial Regulation
+Fiscal and Structural Reform
+Future of Work
+Inclusive Growth
+International Financial Institutions
+International Markets
+Macroeconomics
+Trade & Tariffs
+	
+
+Energy & EnvironmentSub-issuesAll Energy & Environment
+Climate Change & Climate Action
+Energy Markets & Governance
+Energy Transitions
+Geopolitics & Energy Security
+Nuclear Energy
+Oil & Gas
+Renewables & Advanced Energy
+	
+
+Resilience & SocietySub-issuesAll Resilience & Society
+Civil Society
+Coronavirus
+Education
+Human Rights
+Migration
+Nationalism
+Populism
+Resilience
+Women
+Youth
+	
+
+Technology & InnovationSub-issuesAll Technology & Innovation
+Cybersecurity
+Disinformation
+Drones
+Entrepreneurship
+Internet
+Internet of Things
+Space
+	
+
+
+
+RegionsAfricaSub-regionsAll Africa
+Angola
+Democratic Republic of the Congo
+East Africa
+Eritrea
+Ethiopia
+General Africa
+Morocco
+Nigeria
+North & West Africa
+Sahel
+South & Central Africa
+South Africa
+Sudan
+Somalia
+	
+
+AmericasSub-regionsAll Americas
+United States and Canada
+Latin America
+Brazil
+Caribbean
+Colombia
+Cuba
+Mexico
+Northern Triangle
+Venezuela
+	
+
+Europe & EurasiaSub-regionsAll Europe & Eurasia
+European Union
+The Balkans
+Belarus
+The Caucasus
+France
+Germany
+Greece
+Hungary
+Italy
+Moldova
+Poland
+Russia
+Turkey
+Ukraine
+United Kingdom
+	
+
+Indo-PacificSub-regionsAll Indo-Pacific
+Afghanistan
+Australia
+Bangladesh
+China
+India
+Japan
+Korea
+Pakistan
+Taiwan
+	
+
+Middle EastSub-regionsAll Middle 
+
+
+# https://www.foxnews.com/live-news/israel-iran-conflict-june-25-2025
+
+if (window && window.foxstrike && Array.isArray(window.foxstrike.cmd)) {
+              window.foxstrike.cmd.push(function(Strike) {
+                Strike.insertAd('mobile', 'adhDom', 'mobile-mw-ad-adh-dom');
+              });
+            } else {
+              console.error('Error: window.foxstrike not found');
+            }Fox News U.S.CrimeImmigrationTerrorTrue CrimeBryan KohbergerKaren ReadPoliticsTrump AdministrationSenateHouseJudiciaryForeign PolicyFox News PollsElectionsWorldU.N.ConflictsTerrorismDisastersGlobal EconomyEnvironmentReligionScandalsOpinionMediaFox Nation CoverageEntertainmentExclusivesCountry MusicRoyal FamiliesDiddyBlake LivelyGame ShowsHot VideosSportsNFLCollege FootballMLBNASCARINDYCARNBANHLGolfTennisFIFA WORLD CUP 26UFC
+WWELifestyleMAHAHealthTravelFood & DrinkGames & QuizzesHealthVideoAIMoreExpand / Collapse searchLoginWatch TVMenu Games
+Expand/Collapse MenuDaily Crossword PuzzleDownWordsCrazy Crystals Match 3 GameWord SwapWord SearchMini Crossword PuzzleStack and Match Block Puzzle
+5 Across the Letter Word GameDealsFOX BusinessExpand/Collapse MenuPersonal FinanceEconomyMarketsWatchlistLifestyleReal EstateTechScience & TechExpand/Collapse MenuAir & SpaceSecurityInnovationVideo GamesMilitary TechPlanet EarthWild NatureWatch LiveExpand/Collapse MenuFOX News ShowsProgramming ScheduleOn Air PersonalitiesFull EpisodesShow ClipsNews ClipsApps & ProductsExpand/Collapse MenuFOX News GoFOX WeatherFOX NationFOX NoticiasFOX News ShopFOX News RadioOutkickNewslettersPodcastsU.S.Expand/Collapse MenuCrimeImmigrationTerrorTrue Crime
+Bryan KohbergerKaren ReadPoliticsExpand/Collapse MenuTrump AdministrationSenateHouseJudiciaryForeign PolicyFox News PollsElectionsWorldExpand/Collapse MenuU.N.ConflictsTerrorismDisastersGlobal EconomyEnvironmentReligionScandalsOpinionMediaExpand/Collapse MenuFOX Nation CoverageEntertainmentExpand/Collapse MenuExclusivesCountry MusicRoyal FamiliesDiddy
+Blake LivelyGame ShowsHot VideosSportsExpand/Collapse MenuNFLCollege FootballMLBNASCAR
+INDYCARNBANHLGolfTennisFIFA WORLD CUP 26UFCWWELifestyleExpand/Collapse MenuMAHAHealthTravelFood & DrinkGames & QuizzesDealsFOX BusinessExpand/Collapse Menu
+Personal FinanceEconomyMarketsWatchlistLifestyleReal EstateTechScience & TechExpand/Collapse MenuAir & SpaceSecurityInnovationPlanet EarthWild NatureVideo GamesMilitary TechGamesExpand/Collapse MenuDaily Crossword PuzzleDownWordsCrazy Crystals Match 3 GameWord SwapWord SearchMini Crossword PuzzleStack and Match Block Puzzle
+5 Across the Letter Word GameWatch LiveExpand/Collapse MenuFOX News ShowsProgramming ScheduleOn Air PersonalitiesWatch LiveFull EpisodesShow ClipsNews ClipsApps & ProductsExpand/Collapse MenuFOX News GoFOX WeatherFOX NationFOX NoticiasFOX News ShopFOX News RadioOutkickNewslettersPodcastsAboutExpand/Collapse MenuContact UsCareersFox Around the WorldAdvertise With UsMedia RelationsCorporate InfromationComplianceFacebookTwitterInstagramRSSEmailFox NewsUpdated Terms of UseNew Privacy PolicyYour Privacy ChoicesClosed Caption PolicyHelpContact UsAccessibility StatementThis material may not be published, broadcast, rewritten, or redistributed. ©2025 FOX News Network, LLC. All rights reserved. Quotes displayed in real-time or delayed by at least 15 minutes. Market data provided by Factset. Powered and implemented by 
+FactSet Digital Solutions. Legal Statement. Mutual Fund and ETF data provided by Refinitiv Lipper.window.foxstrike.cmd.push(function(Strike){
+      Strike.insertAd("desktop", "lb1", "desk-ad-lb1", "blog");
+    });window.foxstrike.cmd.push(function(Strike){
+      Strike.insertAd("tablet", "lb1", "tw-ad-lb1", "blog");
+    });Last Update June 27, 2025, 6:36 AM EDTTrump says Iran won't be building bombs 'for a very long time'President Donald Trump said Iran will not be building bombs “for a very long time” following U.S. airstrikes on the Fordow, Natanz and Isfahan nuclear facilities over the weekend.Covered by: Greg Norman, Landon Mion, Alex Nitzberg, Diana Stancey, Rachel Wolf, Efrat Lachter, Emma Colton, Danielle Wallace, Anders Hagstrom and Jasmine BaehrFacebookTwitterFlipboardEmailFast FactsWhen did Israel strike Iran?Israel initiated strikes targeting nuclear sites in Iran on June 13th, marking the start of fire trading between the two nations.Did the United States strike Iran?
+On June 22nd, the United States carried out strikes on three of Iran’s nuclear facilities in Operation Midnight Hammer, according to President Donald Trump.Did Israel and Iran violate their ceasefire deal?On Tuesday, Israel and Iran reportedly accepted a Trump-brokered ceasefire but later, Israel accused Iran of breaking the agreement with missile launches.What did President Trump say about Israel and Iran’s ceasefire deal?President Trump condemned both Iran and Israel for violating the ceasefire deal. He called for Israel to “not drop those bombs” in a Truth Social post.
+window.foxstrike.cmd.push(function(Strike){      Strike.insertAd("desktop", "ban1", "desk-ad-ban1", "blog");
+    });Get the Best of Fox NewsFast, 24/7 alerts delivered to your inbox daily. Subscribe to be in the know of the most important moments around the world. You Have Successfully Subscribed To Email Updates.ClosePlease Enter A Valid Email Address.CloseBy subscribing, you agree to our Privacy Policy.
+window.foxstrike.cmd.push(function(Strike){      Strike.insertAd("mobile", "ban1", "mw-ad-ban1", "blog");
+    });window.foxstrike.cmd.push(function(Strike){
+        Strike.insertAd("tablet", "lb2", "tw-ad-lb2", "blog");
+      });36PostsSort BySort by NewestSort by OldestBack to Topincoming update…Coverage for this event has ended.PinnedTrump defends Netanyahu amid trial, calls for pardon over 'witch hunt'
+​President Donald Trump issued a forceful defense of Israeli Prime Minister Benjamin “Bibi” Netanyahu on Wednesday, slamming the ongoing corruption trial against him as a “Witch Hunt” and calling for the charges to be dropped or a pardon granted immediately.Posting to Truth Social, Trump said he was “shocked” to learn that Netanyahu, fresh off what Trump called “one of [Israel’s] Greatest Moments in History,” is still being summoned to court.
+“Bibi and I just went through HELL together, fighting a very tough and brilliant longtime enemy of Israel, Iran,” Trump wrote. “Bibi Netanyahu was a WARRIOR… [and] the result was something that nobody thought was possible, a complete elimination of potentially one of the biggest and most powerful Nuclear Weapons anywhere in the World.”The president condemned the ongoing prosecution, which dates back to 2020 and includes accusations that Netanyahu accepted luxury gifts from Hollywood mogul Arnon Milchan.One now-viral detail from the trial: testimony that Netanyahu’s wife requested a giant Bugs Bunny stuffed toy for their son ahead of a 1996 dinner with Milchan.Trump called the trial a political attack over trivial matters, writing: “This long running, politically motivated case, ‘concerning cigars, a Bugs Bunny doll, and numerous other unfair charges’... is unthinkable to me.”
+Trump concluded by urging Israel to act: “Bibi Netanyahu’s trial should be CANCELLED, IMMEDIATELY, or a Pardon given to a Great Hero… THIS TRAVESTY OF ‘JUSTICE’ CAN NOT BE ALLOWED!”The trial resumes Monday in Jerusalem.Posted by Jasmine Baehr ShareGingrich: America 'taught the world a lesson' in Iranian nuclear site strikes​Former House Speaker Newt Gingrich praised President Donald Trump’s leadership and strategic patience in the successful neutralization of Iran’s nuclear threat and the brokering of a ceasefire between Iran and Israel.Speaking on "Hannity," Gingrich called the 12-day campaign “historic” and credited both Trump and Israeli Prime Minister Benjamin Netanyahu with executing a long-planned and highly coordinated operation.Gingrich emphasized that while the media often portrays Trump as chaotic, his approach to the Iran crisis revealed a clear strategy. “Trump is very disciplined… He had a clear deadline. He artfully said to the world, ‘I would really like to avoid this."
+He described the mission’s culmination, the U.S. bombing of Iran’s key nuclear sites, as a showcase of American power and global deterrence.“We taught the world a lesson. We can launch bombers from Missouri to anywhere in the world and have precision targets that are annihilating,” Gingrich said.Looking ahead, Gingrich warned the success of the ceasefire depends on Iranian compliance. He said the regime must end ballistic missile development, stop proxy attacks, and allow full inspections of its nuclear program.“The minimums for thinking this is successful are: quit saying ‘Death to Israel’ and ‘Death to America,’” he added.Posted by Jasmine Baehr ShareBlackburn praises Operation Midnight Hammer: 'This Is what peace through strength looks like'Senator Marsha Blackburn praised the U.S. military and President Donald Trump for the success of Operation Midnight Hammer, calling it a historic moment in American and global security.Speaking from the Senate floor, Blackburn described the mission as “absolutely incredible,” declaring that the United States “wiped out Iran’s nuclear program.”
+She emphasized Iran’s long history of promoting terror and chaos across the Middle East while advancing its nuclear ambitions under chants of “death to Israel” and “death to America.”That threat, she said, is now eliminated “thanks to the bravery, valor, and unmatched capability of the U.S. Military” and President Donald Trump’s “decisive leadership.”She added, “Make no mistake, we have the only military on the planet that could get this job done,” crediting American service members as “the greatest fighting force in the history of the world.”
+Blackburn concluded by stressing that a ceasefire has already been reached between Israel and a “much weaker Iran,” stating, “This is what peace through strength looks like, and only the U.S. military under President Trump’s leadership could accomplish this feat.”Posted by Jasmine Baehr Sharewindow.foxstrike.
+

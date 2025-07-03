@@ -332,14 +332,25 @@ assistant.config.json
 
 
 // ai-cli.js
+import { setProjectName } from './src/history/history.js'
 import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
+import { ask } from './src/use-cases/ask.js'
+import { askWithWebSearchVector } from './src/use-cases/askInternet.js'
+import { cleanUp } from './src/use-cases/cleanUp.js'
 
-try {
-  const count = await uploadCodebase()
-  console.log(`✅ Uploaded ${count} file(s) to vector store.`)
-} catch (err) {
-  console.error('❌ Failed to upload codebase:', err.message)
-}
+setProjectName('ai-cli')
+await uploadCodebase()
+
+//console.log(await internetQuestion('tell me briefly about Iran Izrael conflict 2025'))
+// console.log(await getVectorStore(getLatestVectorStoreId()))
+// console.log(await simpleQuestion('create a README.md for this project'))
+// await uploadCodebase()
+// console.log(await simpleQuestion('create a README.md for this project'))
+// console.log(await listVectorStoreFiles(getLatestVectorStoreId()))
+// console.log(await getVectorStore(getLatestVectorStoreId()))
+// console.log(await simpleQuestion('tell me briefly about Iran Izrael conflict 2025'))
+
+// cleanUp()
 
 
 // bin/ai-cli
@@ -348,10 +359,18 @@ try {
 import('../ai-cli.js')
 
 
+// log/ai.json
+[
+  {
+    "funcName": "setProjectName",
+    "arguments": "ai-cli"
+  }
+]
+
 // package.json
 {
   "name": "ai-cli",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "type": "module",
   "bin": {
     "ai-cli": "./bin/ai-cli"
@@ -364,6 +383,9 @@ import('../ai-cli.js')
   "description": "",
   "dependencies": {
     "archiver": "^7.0.1",
+    "istextorbinary": "^9.5.0",
+    "jsdom": "^26.1.0",
+    "node-fetch": "^3.3.2",
     "openai": "^5.8.2"
   }
 }
@@ -412,6 +434,48 @@ import path from 'path'
 const LOG_FILE = path.resolve('log/ai.json')
 
 /**
+ * Sets the current project name by logging it to the history file.
+ * Throws an error if a project name is already set.
+ *
+ * @param {string} name - The name of the project to set.
+ * @throws {Error} If a project name has already been set.
+ */
+export function setProjectName(name) {
+  try {
+    if (fs.existsSync(LOG_FILE)) {
+      fs.unlinkSync(LOG_FILE) // Delete the log file first
+    }
+  } catch (err) {
+    console.warn(`[setProjectName] Failed to delete log: ${err.message}`)
+  }
+
+  putHistory('setProjectName', name)
+}
+
+export function putQuestion(question, metadata) {
+  putHistory('putQuestion', metadata)
+}
+
+/**
+ * Returns the most recently set project name from the history log.
+ * @returns {string|undefined}
+ */
+export function getProjectName() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const latest = [...logs].reverse().find((entry) => entry.funcName === 'setProjectName')
+
+    return typeof latest?.arguments === 'string' ? latest.arguments : undefined
+  } catch (err) {
+    console.warn(`[getProjectName] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
+/**
  * Append a log entry to the ai.json log file.
  * @param {string} funcName
  * @param {any} args
@@ -449,6 +513,97 @@ export function getLatestVectorStoreId() {
   }
 }
 
+/**
+ * Returns the most recently created assistant ID from the history log.
+ * @returns {string|undefined}
+ */
+export function getLatestAssistantId() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createAssistant' && entry.result?.id)
+
+    return latest?.result?.id
+  } catch (err) {
+    console.warn(`[getLatestAssistantId] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
+/**
+ * Returns the most recently created thread ID from the history log.
+ * @returns {string|undefined}
+ */
+export function getLatestThreadId() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const latest = [...logs].reverse().find((entry) => entry.funcName === 'createThread' && entry.result?.id)
+
+    return latest?.result?.id
+  } catch (err) {
+    console.warn(`[getLatestThreadId] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
+/**
+ * Finds the uploaded file ID from the latest vector store upload by partial file name.
+ * @param {string} nameSubstring Substring to look for in file name.
+ * @returns {string|undefined} Matching file ID or undefined.
+ */
+export function findVectorStoreFileIdByName(nameSubstring) {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const latest = [...logs]
+      .reverse()
+      .find(
+        (entry) =>
+          entry.funcName === 'uploadFilesToVectorStore' &&
+          Array.isArray(entry.arguments?.filePaths) &&
+          Array.isArray(entry.result)
+      )
+
+    if (!latest) return undefined
+    const index = latest.arguments.filePaths.findIndex((p) => p.includes(nameSubstring))
+    if (index === -1) return undefined
+
+    return latest.result[index] // file ID from result array
+  } catch (err) {
+    console.warn(`[findVectorStoreFileIdByName] Failed to read log: ${err.message}`)
+    return undefined
+  }
+}
+
+export async function getVectorAndAssistantCreations() {
+  if (!fs.existsSync(LOG_FILE)) return undefined
+  const entries = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+  if (!Array.isArray(entries)) throw new Error('Invalid log format: expected an array')
+
+  return entries.filter((entry) => entry.funcName === 'createVectorStore' || entry.funcName === 'createAssistant')
+}
+
+export async function deleteHistory() {
+  try {
+    await fs.unlink(LOG_FILE)
+    console.log(`🗑️ Deleted log file: ${LOG_FILE}`)
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      console.warn(`⚠️ Log file does not exist: ${LOG_FILE}`)
+    } else {
+      console.error(`❌ Failed to delete log file: ${err.message}`)
+      throw err
+    }
+  }
+}
+
 
 // src/providers/ai.js
 import fs from 'fs'
@@ -469,16 +624,30 @@ export async function createVectorStore(name) {
 }
 
 export async function uploadFilesToVectorStore(vectorStoreId, filePaths, metadata = {}) {
-  const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
-  await openai.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
-  const uploadedCount = files.length
-  putHistory('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, uploadedCount)
-  return uploadedCount
-}
+  // Step 1: List existing files
+  const beforeFiles = await openai.vectorStores.files.list(vectorStoreId)
+  const beforeFileIds = new Set(beforeFiles.data.map((f) => f.id))
 
+  // Step 2: Prepare files
+  const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
+
+  // Step 3: Upload batch
+  await openai.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
+
+  // Step 4: List files after upload
+  const afterFiles = await openai.vectorStores.files.list(vectorStoreId)
+  const afterFileIds = new Set(afterFiles.data.map((f) => f.id))
+
+  // Step 5: Find new files by comparing sets
+  const newFileIds = [...afterFileIds].filter((id) => !beforeFileIds.has(id))
+
+  // Step 6: Log and return
+  putHistory('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, newFileIds)
+
+  return newFileIds.length
+}
 export async function listVectorStoreFiles(vectorStoreId) {
   const result = await openai.vectorStores.files.list(vectorStoreId)
-  console.log(result.data)
   return result.data.map((f) => ({
     id: f.id,
     name: f.file_name || f.filename || 'unknown',
@@ -487,7 +656,9 @@ export async function listVectorStoreFiles(vectorStoreId) {
 }
 
 export async function deleteVectorStoreFile(vectorStoreId, fileId) {
-  const result = await openai.vectorStores.files.delete(vectorStoreId, fileId)
+  const result = await openai.vectorStores.files.delete(fileId, {
+    vector_store_id: vectorStoreId
+  })
   putHistory('deleteVectorStoreFile', { vectorStoreId, fileId }, result)
   return result
 }
@@ -506,21 +677,24 @@ export async function getVectorStore(vectorStoreId) {
 // ASSISTANT
 
 export async function createAssistant({ name, instructions, model, vectorStoreIds }) {
-  const result = await openai.assistants.create({
+  const tool_resources = vectorStoreIds
+    ? {
+        file_search: { vector_store_ids: vectorStoreIds }
+      }
+    : undefined
+  const result = await openai.beta.assistants.create({
     name,
     instructions,
     model,
     tools: [{ type: 'file_search' }],
-    tool_resources: {
-      file_search: { vector_store_ids: vectorStoreIds }
-    }
+    tool_resources
   })
   putHistory('createAssistant', { name, instructions, model, vectorStoreIds }, result)
   return result.id
 }
 
 export async function updateAssistantVectorStores(assistantId, vectorStoreIds) {
-  const result = await openai.assistants.update(assistantId, {
+  const result = await openai.beta.assistants.update(assistantId, {
     tool_resources: {
       file_search: { vector_store_ids: vectorStoreIds }
     }
@@ -530,56 +704,85 @@ export async function updateAssistantVectorStores(assistantId, vectorStoreIds) {
 }
 
 export async function deleteAssistant(assistantId) {
-  const result = await openai.assistants.delete(assistantId)
+  const result = await openai.beta.assistants.delete(assistantId)
   putHistory('deleteAssistant', { assistantId }, result)
   return result
 }
 
 export async function getAssistant(assistantId) {
-  return await openai.assistants.retrieve(assistantId)
+  return await openai.beta.assistants.retrieve(assistantId)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // THREAD
 
 export async function createThread() {
-  const result = await openai.threads.create()
+  const result = await openai.beta.threads.create()
   putHistory('createThread', {}, result)
   return result.id
 }
 
-export async function askQuestion({ assistantId, threadId, question, onProgress = () => {} }) {
-  const run = await openai.threads.createAndRun({
-    assistant_id: assistantId,
-    thread: { id: threadId, messages: [{ role: 'user', content: question }] }
+/**
+ * Sends a user question to an assistant and returns the response.
+ * Supports attaching files to the user message (non-vector storage).
+ *
+ * @param {object} params
+ * @param {string} params.assistantId - Assistant ID
+ * @param {string} params.threadId - Thread ID
+ * @param {string} params.question - User question
+ * @param {string[]} [params.fileIds] - Optional file IDs to attach
+ * @param {function} [params.onProgress] - Optional progress callback
+ * @returns {Promise<string>} Assistant reply
+ */
+export async function askQuestion({ assistantId, threadId, question, fileIds = [], onProgress = () => {} }) {
+  // Step 1: Add user message to thread, optionally with file attachments
+  await openai.beta.threads.messages.create(threadId, {
+    role: 'user',
+    content: question,
+    ...(fileIds.length > 0 && {
+      attachments: fileIds.map((file_id) => ({
+        file_id,
+        tools: [{ type: 'file_search' }] // Enables file usage in response
+      }))
+    })
   })
 
-  while (run.status === 'queued' || run.status === 'in_progress') {
+  // Step 2: Initiate a run
+  let run = await openai.beta.threads.runs.create(threadId, {
+    assistant_id: assistantId
+  })
+
+  // Step 3: Poll until complete
+  while (['queued', 'in_progress'].includes(run.status)) {
     onProgress(run.status)
     await new Promise((r) => setTimeout(r, 1000))
-    const updated = await openai.runs.retrieve(run.thread_id, run.id)
-    Object.assign(run, updated)
+    run = await openai.beta.threads.runs.retrieve(run.id, { thread_id: threadId })
   }
 
-  const messages = await openai.messages.list(run.thread_id)
-  const reply = messages.data.find((m) => m.role === 'assistant')?.content?.[0]?.text?.value
-  putHistory('askQuestion', { assistantId, threadId, question }, reply)
+  // Step 4: Extract assistant reply
+  const messages = await openai.beta.threads.messages.list(threadId)
+  const reply = messages.data
+    .filter((m) => m.role === 'assistant')
+    .map((m) => m.content?.[0]?.text?.value)
+    .filter(Boolean)[0] // First assistant message is the latest
+
+  putHistory('askQuestion', { assistantId, threadId, question, fileIds }, reply)
   return reply
 }
 
 export async function getThreadMessages(threadId) {
-  const res = await openai.messages.list(threadId)
+  const res = await openai.beta.threads.messages.list(threadId)
   return res.data
 }
 
 export async function deleteThread(threadId) {
-  const result = await openai.threads.delete(threadId)
+  const result = await openai.beta.threads.delete(threadId)
   putHistory('deleteThread', { threadId }, result)
   return result
 }
 
 export async function estimateTokenCount({ threadId, prompt }) {
-  const messages = await openai.messages.list(threadId)
+  const messages = await openai.beta.threads.messages.list(threadId)
   const text = messages.data.flatMap((m) => m.content.map((c) => c.text?.value || '')).join('\n') + '\n' + prompt
   const tokens = encode(text).length
   return tokens
@@ -613,6 +816,27 @@ export function chunkArray(arr, size) {
     chunks.push(arr.slice(i, i + size))
   }
   return chunks
+}
+
+/**
+ * Upload a file to OpenAI's file storage and return its file ID.
+ * This file can be attached to a thread message (not vector storage).
+ *
+ * @param {string} filePath - Absolute or relative path to file on disk
+ * @param {string} purpose - File purpose, defaults to 'assistants'
+ * @returns {Promise<string>} OpenAI file ID
+ */
+export async function uploadFileToStorage(filePath, purpose = 'assistants') {
+  const logicalPath = path.relative(process.cwd(), filePath)
+  const file = await toFile(fs.createReadStream(filePath), logicalPath)
+
+  const result = await openai.files.create({
+    file,
+    purpose
+  })
+
+  putHistory('uploadFileToStorage', { filePath, purpose }, result)
+  return result.id
 }
 
 
@@ -662,6 +886,7 @@ import fs from 'fs'
 import path from 'path'
 import { getGitTrackedFiles } from '../providers/files.js'
 import { createVectorStore, uploadFilesToVectorStore } from '../providers/ai.js'
+import { getLatestVectorStoreId, getProjectName } from '../history/history.js'
 
 /**
  * Uploads all Git-tracked **text-based** project files as a single document to a new vector store.
@@ -694,8 +919,8 @@ export async function uploadCodebase() {
 
   await new Promise((res) => writeStream.on('finish', res))
 
-  const vectorStoreName = `codebase_${commit.slice(0, 8)}`
-  const vectorStoreId = await createVectorStore(vectorStoreName)
+  const vectorStoreName = getProjectName()
+  const vectorStoreId = getLatestVectorStoreId() || (await createVectorStore(vectorStoreName))
 
   const uploadedCount = await uploadFilesToVectorStore(vectorStoreId, [outputFile], { commit })
 

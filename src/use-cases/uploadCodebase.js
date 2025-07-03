@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { getGitTrackedFiles } from '../providers/files.js'
 import { createVectorStore, uploadFilesToVectorStore } from '../providers/ai.js'
+import { getLatestVectorStoreId, getProjectName } from '../history/history.js'
 
 /**
  * Uploads all Git-tracked **text-based** project files as a single document to a new vector store.
@@ -34,8 +35,8 @@ export async function uploadCodebase() {
 
   await new Promise((res) => writeStream.on('finish', res))
 
-  const vectorStoreName = `codebase_${commit.slice(0, 8)}`
-  const vectorStoreId = await createVectorStore(vectorStoreName)
+  const vectorStoreName = getProjectName()
+  const vectorStoreId = getLatestVectorStoreId() || (await createVectorStore(vectorStoreName))
 
   const uploadedCount = await uploadFilesToVectorStore(vectorStoreId, [outputFile], { commit })
 

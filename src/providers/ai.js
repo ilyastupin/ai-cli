@@ -16,13 +16,28 @@ export async function createVectorStore(name) {
 }
 
 export async function uploadFilesToVectorStore(vectorStoreId, filePaths, metadata = {}) {
-  const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
-  await openai.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
-  const uploadedCount = files.length
-  putHistory('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, uploadedCount)
-  return uploadedCount
-}
+  // Step 1: List existing files
+  const beforeFiles = await openai.vectorStores.files.list(vectorStoreId)
+  const beforeFileIds = new Set(beforeFiles.data.map((f) => f.id))
 
+  // Step 2: Prepare files
+  const files = await Promise.all(filePaths.map((p) => toFile(fs.createReadStream(p), path.relative(process.cwd(), p))))
+
+  // Step 3: Upload batch
+  await openai.vectorStores.fileBatches.uploadAndPoll(vectorStoreId, { files })
+
+  // Step 4: List files after upload
+  const afterFiles = await openai.vectorStores.files.list(vectorStoreId)
+  const afterFileIds = new Set(afterFiles.data.map((f) => f.id))
+
+  // Step 5: Find new files by comparing sets
+  const newFileIds = [...afterFileIds].filter((id) => !beforeFileIds.has(id))
+
+  // Step 6: Log and return
+  putHistory('uploadFilesToVectorStore', { vectorStoreId, filePaths, metadata }, newFileIds)
+
+  return newFileIds.length
+}
 export async function listVectorStoreFiles(vectorStoreId) {
   const result = await openai.vectorStores.files.list(vectorStoreId)
   return result.data.map((f) => ({
@@ -33,7 +48,9 @@ export async function listVectorStoreFiles(vectorStoreId) {
 }
 
 export async function deleteVectorStoreFile(vectorStoreId, fileId) {
-  const result = await openai.vectorStores.files.delete(vectorStoreId, fileId)
+  const result = await openai.vectorStores.files.delete(fileId, {
+    vector_store_id: vectorStoreId
+  })
   putHistory('deleteVectorStoreFile', { vectorStoreId, fileId }, result)
   return result
 }
@@ -52,14 +69,17 @@ export async function getVectorStore(vectorStoreId) {
 // ASSISTANT
 
 export async function createAssistant({ name, instructions, model, vectorStoreIds }) {
+  const tool_resources = vectorStoreIds
+    ? {
+        file_search: { vector_store_ids: vectorStoreIds }
+      }
+    : undefined
   const result = await openai.beta.assistants.create({
     name,
     instructions,
     model,
     tools: [{ type: 'file_search' }],
-    tool_resources: {
-      file_search: { vector_store_ids: vectorStoreIds }
-    }
+    tool_resources
   })
   putHistory('createAssistant', { name, instructions, model, vectorStoreIds }, result)
   return result.id
@@ -94,34 +114,51 @@ export async function createThread() {
   return result.id
 }
 
-export async function askQuestion({ assistantId, threadId, question, onProgress = () => {} }) {
-  // Add user message to existing thread
+/**
+ * Sends a user question to an assistant and returns the response.
+ * Supports attaching files to the user message (non-vector storage).
+ *
+ * @param {object} params
+ * @param {string} params.assistantId - Assistant ID
+ * @param {string} params.threadId - Thread ID
+ * @param {string} params.question - User question
+ * @param {string[]} [params.fileIds] - Optional file IDs to attach
+ * @param {function} [params.onProgress] - Optional progress callback
+ * @returns {Promise<string>} Assistant reply
+ */
+export async function askQuestion({ assistantId, threadId, question, fileIds = [], onProgress = () => {} }) {
+  // Step 1: Add user message to thread, optionally with file attachments
   await openai.beta.threads.messages.create(threadId, {
     role: 'user',
-    content: question
+    content: question,
+    ...(fileIds.length > 0 && {
+      attachments: fileIds.map((file_id) => ({
+        file_id,
+        tools: [{ type: 'file_search' }] // Enables file usage in response
+      }))
+    })
   })
 
-  // Initiate a run
+  // Step 2: Initiate a run
   let run = await openai.beta.threads.runs.create(threadId, {
     assistant_id: assistantId
   })
 
-  // Poll for completion
+  // Step 3: Poll until complete
   while (['queued', 'in_progress'].includes(run.status)) {
     onProgress(run.status)
     await new Promise((r) => setTimeout(r, 1000))
     run = await openai.beta.threads.runs.retrieve(run.id, { thread_id: threadId })
   }
 
-  // Get latest assistant reply
+  // Step 4: Extract assistant reply
   const messages = await openai.beta.threads.messages.list(threadId)
   const reply = messages.data
     .filter((m) => m.role === 'assistant')
     .map((m) => m.content?.[0]?.text?.value)
-    .filter(Boolean)
-    .pop()
+    .filter(Boolean)[0] // First assistant message is the latest
 
-  putHistory('askQuestion', { assistantId, threadId, question }, reply)
+  putHistory('askQuestion', { assistantId, threadId, question, fileIds }, reply)
   return reply
 }
 
@@ -171,4 +208,25 @@ export function chunkArray(arr, size) {
     chunks.push(arr.slice(i, i + size))
   }
   return chunks
+}
+
+/**
+ * Upload a file to OpenAI's file storage and return its file ID.
+ * This file can be attached to a thread message (not vector storage).
+ *
+ * @param {string} filePath - Absolute or relative path to file on disk
+ * @param {string} purpose - File purpose, defaults to 'assistants'
+ * @returns {Promise<string>} OpenAI file ID
+ */
+export async function uploadFileToStorage(filePath, purpose = 'assistants') {
+  const logicalPath = path.relative(process.cwd(), filePath)
+  const file = await toFile(fs.createReadStream(filePath), logicalPath)
+
+  const result = await openai.files.create({
+    file,
+    purpose
+  })
+
+  putHistory('uploadFileToStorage', { filePath, purpose }, result)
+  return result.id
 }

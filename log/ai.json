@@ -1,14 +1,18 @@
 [
   {
+    "funcName": "setProjectName",
+    "arguments": "ai-cli"
+  },
+  {
     "funcName": "createVectorStore",
     "arguments": {
-      "name": "codebase_314000c1"
+      "name": "ai-cli"
     },
     "result": {
-      "id": "vs_6864c6b49ed881918851dfb2037ef47e",
+      "id": "vs_6866e275e0848191997ece893ec189c8",
       "object": "vector_store",
-      "created_at": 1751434932,
-      "name": "codebase_314000c1",
+      "created_at": 1751573109,
+      "name": "ai-cli",
       "usage_bytes": 0,
       "file_counts": {
         "in_progress": 0,
@@ -20,84 +24,35 @@
       "status": "completed",
       "expires_after": null,
       "expires_at": null,
-      "last_active_at": 1751434932,
+      "last_active_at": 1751573109,
       "metadata": {}
     }
   },
   {
     "funcName": "uploadFilesToVectorStore",
     "arguments": {
-      "vectorStoreId": "vs_6864c6b49ed881918851dfb2037ef47e",
+      "vectorStoreId": "vs_6866e275e0848191997ece893ec189c8",
       "filePaths": [
-        "/Users/ilyanew/work/Marcato/deploy71/ai/CLI/.tmp/codebase-314000c1.txt"
+        "/Users/ilyanew/work/Marcato/deploy71/ai/CLI/.tmp/codebase-6fe1e4c7.txt"
       ],
       "metadata": {
-        "commit": "314000c1042009d2d8a4fd922b013352e321528c"
+        "commit": "6fe1e4c7dd2d3ea0382e205f363ae3223254b2ce"
       }
     },
-    "result": 1
+    "result": [
+      "file-XjXRxHcu7exdDpMjSuPoJk"
+    ]
   },
   {
-    "funcName": "createAssistant",
+    "funcName": "deleteVectorStoreFile",
     "arguments": {
-      "name": "Helpful Assistant",
-      "instructions": "You are a helpful assistant.",
-      "model": "gpt-4o",
-      "vectorStoreIds": [
-        "vs_6864c6b49ed881918851dfb2037ef47e"
-      ]
+      "vectorStoreId": "vs_6866e275e0848191997ece893ec189c8",
+      "fileId": "file-XjXRxHcu7exdDpMjSuPoJk"
     },
     "result": {
-      "id": "asst_uJlpuAihnAERvUYyQneDvQW9",
-      "object": "assistant",
-      "created_at": 1751435813,
-      "name": "Helpful Assistant",
-      "description": null,
-      "model": "gpt-4o",
-      "instructions": "You are a helpful assistant.",
-      "tools": [
-        {
-          "type": "file_search",
-          "file_search": {
-            "ranking_options": {
-              "ranker": "default_2024_08_21",
-              "score_threshold": 0
-            }
-          }
-        }
-      ],
-      "top_p": 1,
-      "temperature": 1,
-      "reasoning_effort": null,
-      "tool_resources": {
-        "file_search": {
-          "vector_store_ids": [
-            "vs_6864c6b49ed881918851dfb2037ef47e"
-          ]
-        }
-      },
-      "metadata": {},
-      "response_format": "auto"
+      "id": "file-XjXRxHcu7exdDpMjSuPoJk",
+      "object": "vector_store.file.deleted",
+      "deleted": true
     }
-  },
-  {
-    "funcName": "createThread",
-    "arguments": {},
-    "result": {
-      "id": "thread_gXo030HWp9NsUdbGiOZOUwRm",
-      "object": "thread",
-      "created_at": 1751435814,
-      "metadata": {},
-      "tool_resources": {}
-    }
-  },
-  {
-    "funcName": "askQuestion",
-    "arguments": {
-      "assistantId": "asst_uJlpuAihnAERvUYyQneDvQW9",
-      "threadId": "thread_gXo030HWp9NsUdbGiOZOUwRm",
-      "question": "create a README.md for this project"
-    },
-    "result": "# README.md\n\n## Project Overview\n\nThis project centers around the development of a command-line interface for interacting with OpenAI's API to create and manage vector stores and assistants. It provides an efficient way to store, retrieve, and manage data for AI-based assistants.\n\n## Features\n\n- **Vector Store Management**: Ability to create, manage, and delete vector stores.\n- **Assistant Creation and Management**: Create AI assistants with specified tools and instructions, update their resources, and manage existing assistants.\n- **Thread Management**: Create and delete threads to manage conversations, and track conversation history.\n- **File Management**: Upload codebases to vector stores, skip binary files, and handle text-based tracked files using Git.\n- **Logging History**: Maintain comprehensive logs of operations performed by the CLI for audit and debugging purposes【4:2†source】【4:3†source】.\n\n## Installation\n\nTo set up the project, ensure you have Node.js installed. Use pnpm for package management. You can install the necessary dependencies by running the following command in the terminal:\n\n```bash\npnpm install\n```\n\n## Usage\n\nTo start using the CLI, execute the following command in the terminal:\n\n```bash\n./bin/ai-cli\n```\n\nThis script initializes the CLI and connects it to the necessary OpenAI services to begin operations such as creating vector stores and managing assistants【4:6†source】【4:9†source】.\n\n## Contributing\n\nIf you would like to contribute to the project, please follow these guidelines:\n\n1. Fork the repository.\n2. Create a new branch.\n3. Make your changes.\n4. Submit a pull request with a detailed description of your changes.\n\n## Contact Information for Support\n\nFor any questions or issues related to this project, please contact the primary maintainer through GitHub Issues or reach out to the provided email in the `package.json` file (if available)【4:4†source】.\n\n## Known Issues or Limitations\n\n- The CLI may encounter issues with unreadable or binary files which are skipped during the upload process.\n- Network dependency: Functionality is reliant on consistent network access to OpenAI services【4:8†source】【4:11†source】.\n\n## License\n\nThis project is licensed under the ISC License. Please refer to the LICENSE file for more details【4:11†source】."
   }
 ]
