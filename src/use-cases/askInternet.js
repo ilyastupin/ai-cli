@@ -22,7 +22,7 @@ import fs from 'fs'
 // Helpers
 
 async function generateSearchQuery(question) {
-  const query = await ask(`${getSearchQuery()}\n\n${question}`, true)
+  const query = await ask(`${getSearchQuery(question)}`, true)
   if (!query || query.length < 3) throw new Error('Empty search query from assistant')
   console.log(`🔍 Brave Search Query: "${query}"`)
   return query

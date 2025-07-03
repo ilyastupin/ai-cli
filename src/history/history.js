@@ -19,7 +19,7 @@ export function setProjectName(name) {
 }
 
 export function putQuestion(question, metadata) {
-  putHistory('putQuestion', metadata)
+  putHistory('putQuestion', question, metadata)
 }
 
 export function getProjectName() {
@@ -170,4 +170,46 @@ export function getAllDeletedIds() {
 export function checkIfDeleted(id) {
   const deletedIds = getAllDeletedIds()
   return deletedIds.includes(id)
+}
+
+export function question(n = 0) {
+  return printHistoryEntry('putQuestion', n, (entry) => entry.arguments)
+}
+
+export function answer(n = 0) {
+  return printHistoryEntry('askQuestion', n, (entry) => entry.result)
+}
+
+function printHistoryEntry(funcName, n, extractor) {
+  try {
+    if (!fs.existsSync(LOG_FILE)) {
+      console.log(`⚠️ No log file found.`)
+      return
+    }
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+    const entries = logs.filter((e) => e.funcName === funcName)
+
+    if (entries.length === 0) {
+      console.log(`⚠️ No "${funcName}" entries in log.`)
+      return
+    }
+
+    let index = n >= 0 ? entries.length - 1 - n : 0
+    const entry = entries[index]
+
+    if (!entry) {
+      console.log(`⚠️ No ${funcName} entry at position ${n}`)
+      return
+    }
+
+    const value = extractor(entry)
+    if (typeof value === 'string') {
+      return value
+    } else {
+      return JSON.stringify(value, null, 2)
+    }
+  } catch (err) {
+    console.error(`[${funcName}] Failed to read log: ${err.message}`)
+  }
 }
