@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { setProjectName, question, answer, getLastUpdatedFileName } from './src/history/history.js'
+import { setProjectName, question, answer, getLastUpdatedFileName, getLastFileList } from './src/history/history.js'
 
 import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
 import { deleteCodebase } from './src/use-cases/deleteCodebase.js'
@@ -51,3 +51,31 @@ function replaceFile(fileName, fileContent) {
 // replaceFile(getLastUpdatedFileName(), answer(0))
 // await deleteCodebase()
 // cleanUp()
+// const q = loadAndClearQuestion()
+// await ask(getFileList(q), { action: 'getFileList' })
+// console.log(answer(0))
+
+// await uploadCodebase()
+// await deleteCodebase()
+// await uploadCodebase()
+
+// await ask('what clarification')
+// console.log(answer(0))
+
+// await ask(loadAndClearQuestion())
+// console.log(answer(0))
+
+await applyChanges(getLastFileList())
+
+// 1. await deleteCodebase()
+// 2. await uploadCodebase()
+//    New feature in question.txt
+// 3. await ask(getFileList(loadAndClearQuestion()), { action: 'getFileList' }); console.log(answer(0))
+// 4. await applyChanges(answer(0))
+//    asked for clarification
+// 5. await ask('what clarification');console.log(answer(0))
+//     how to restart - find the list on your screen and copy out its tail only and put to questions.txt
+// 6. await applyChanges(loadAndClearQuestion())
+// 7. await ask(loadAndClearQuestion()); console.log(answer(0))
+// 8. console.log(getLastFileList()) - something that can help
+// 9. await applyChanges(getLastFileList())

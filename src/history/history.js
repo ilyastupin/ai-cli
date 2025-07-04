@@ -239,3 +239,38 @@ export function getLastUpdatedFileName() {
 
   return match.arguments.context.fileName
 }
+
+/**
+ * Returns the result of the most recent askQuestion call
+ * where context.action === 'getFileList'.
+ *
+ * @returns {string} Multiline file list string
+ * @throws {Error} If no matching entry is found
+ */
+export function getLastFileList() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) {
+      throw new Error(`Log file not found at ${LOG_FILE}`)
+    }
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+
+    const match = [...logs]
+      .reverse()
+      .find(
+        (entry) =>
+          entry.funcName === 'askQuestion' &&
+          entry.arguments?.context?.action === 'getFileList' &&
+          typeof entry.result === 'string'
+      )
+
+    if (!match) {
+      throw new Error('No askQuestion entry with context.action === "getFileList" found in history')
+    }
+
+    return match.result
+  } catch (err) {
+    console.error(`[getLastFileList] ${err.message}`)
+    throw err
+  }
+}

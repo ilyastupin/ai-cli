@@ -1,24 +1,31 @@
 import { ask } from './ask.js'
 import { answer } from '../history/history.js'
-import { getFullContent } from '../providers/files.js'
+import { getFullContent } from '../providers/prompts.js'
+import { randomUUID } from 'crypto'
 
 /**
  * Applies content analysis to a list of files, triggering assistant review for each.
- * If the assistant replies with "clarification needed", an error is thrown.
+ * If the assistant replies with "clarification needed", logs and skips further processing.
  *
  * @param {string} fileList - Multiline string of filenames to check.
- * @throws {Error} if any response includes "clarification needed".
  */
 export async function applyChanges(fileList) {
   const files = fileList.split(/\r?\n/).filter(Boolean)
+  const batchId = randomUUID()
 
   for (const f of files) {
     const content = getFullContent(f)
-    await ask(content, { action: 'getFullContent', fileName: f })
+
+    await ask(content, {
+      action: 'getFullContent',
+      fileName: f,
+      id: batchId
+    })
 
     const latest = answer(0)
     if (typeof latest === 'string' && latest.toLowerCase().includes('clarification needed')) {
-      throw new Error(`⚠️ Assistant requested clarification for file: ${f}`)
+      console.log(`⚠️ Assistant requested clarification for file: ${f}`)
+      return
     }
   }
 }
