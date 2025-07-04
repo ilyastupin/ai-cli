@@ -25,15 +25,17 @@ function handleClarification(reply, contextLabel) {
 
 /**
  * Applies content analysis to a list of files, triggering assistant review for each.
- * If the assistant replies with "clarification needed" in the first line, logs and exits.
+ * Skips the first file (commit message). If the assistant replies with "clarification needed"
+ * in the first line, logs and skips further processing.
  *
- * @param {string} fileList - Multiline string of filenames to check.
+ * @param {string} fileList - Multiline string of filenames to check, first line is commit message.
  */
 export async function applyChanges(fileList) {
   const files = fileList.split(/\r?\n/).filter(Boolean)
   const batchId = randomUUID()
 
-  for (const f of files) {
+  for (const f of files.slice(1)) {
+    // ← Only this line changed
     console.log(`\n🔍 Processing file: ${f}`)
     console.log(`🆔 Batch ID: ${batchId}`)
 
@@ -46,7 +48,13 @@ export async function applyChanges(fileList) {
     })
 
     const latest = answer(0)
-    handleClarification(latest, f)
+    const firstLine = typeof latest === 'string' ? latest.split(/\r?\n/)[0] : ''
+
+    if (firstLine.toLowerCase().includes('clarification needed')) {
+      console.log(latest)
+      console.log(`⚠️ Assistant requested clarification for file: ${f}`)
+      process.exit(1)
+    }
   }
 
   console.log('\n✅ All files processed successfully.')
@@ -105,6 +113,6 @@ export async function makeFileList(prompt) {
   await ask(getFileList(prompt), { action: 'getFileList' })
 
   const latest = answer(0)
-  console.log(latest)
+  console.log(latest.trim())
   handleClarification(latest, 'file list generation')
 }

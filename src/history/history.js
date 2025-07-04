@@ -274,3 +274,42 @@ export function getLastFileList() {
     throw err
   }
 }
+
+/**
+ * Finds the original questions based on specific signatures and context.
+ *
+ * @param {number} n - The index from the end for the question in the history array.
+ * @returns {{ question: string, historyIndex: number }} The original question and its index in the history.
+ */
+export function originalQuestion(n = 0) {
+  try {
+    if (!fs.existsSync(LOG_FILE)) {
+      console.log(`⚠️ No log file found.`)
+      return
+    }
+
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+    const relevantEntries = []
+
+    logs.reverse().forEach((entry, index) => {
+      if (
+        entry.funcName === 'askQuestion' &&
+        entry.arguments?.question &&
+        (entry.arguments.question.includes('---+++---') || !['getFullContent', 'getFileList'].includes(entry.arguments.context?.action))
+      ) {
+        const segments = entry.arguments.question.split('---+++---')
+        const questionSegment = segments.length > 2 ? segments[1].trim() : entry.arguments.question
+        relevantEntries.push({ question: questionSegment, historyIndex: index })
+      }
+    })
+
+    if (n < 0 || n >= relevantEntries.length) {
+      console.log(`⚠️ No relevant question entry at position ${n}`)
+      return
+    }
+
+    return relevantEntries[n]
+  } catch (err) {
+    console.error(`[originalQuestion] Failed to read log: ${err.message}`)
+  }
+}
