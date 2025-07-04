@@ -68,7 +68,10 @@ function showMenu() {
   console.log('3. Show original question')
   console.log('4. Show answer')
   console.log('5. Ask question')
-  console.log('6. Custom action')
+  console.log('6. Ask question with Internet search')
+  console.log('7. Delete codebase')
+  console.log('8. Upload codebase')
+  console.log('9. Custom action')
 }
 
 async function showQuestion() {
@@ -107,6 +110,19 @@ async function askQuestion() {
   console.log(answer(0))
 }
 
+async function askQuestionWithInternet() {
+  await askWithWebSearchVector(loadAndClearQuestion())
+  console.log(answer(0))
+}
+
+async function deleteTheCodebase() {
+  await deleteCodebase()
+}
+
+async function uploadTheCodebase() {
+  await uploadCodebase()
+}
+
 showMenu()
 const option = parseInt(await prompt('Select an option (default 0): '), 10) || 0
 
@@ -130,6 +146,15 @@ switch (option) {
     await askQuestion()
     break
   case 6:
+    await askQuestionWithInternet()
+    break
+  case 7:
+    await deleteTheCodebase()
+    break
+  case 8:
+    await uploadTheCodebase()
+    break
+  case 9:
     await custom()
     break
   default:
