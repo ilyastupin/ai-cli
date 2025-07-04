@@ -35,14 +35,24 @@ The question is:
 ${question}
 `
 
-export const getFullContent = (fileName) => `
-Now I tell you file name and you show me its full content. I will do it several times for different files.
+export const clarify = (clarification) => `
+${clarification}
 
-I expect file content only
+Please tell me if it clear but do noting else until I ask you.
+`
+
+export const getFullContent = (fileName) => `
+Now I tell you file name and you show me its full UPDATED! content.
+
+I expect file content only but with most recent updates that we talked thru.
 
 No comment from your side
 
 No additional formatting needed
+
+But if you think that you need to ask some clarifying question return me this: "clarification needed" -
+this is important for me to parse it out properly - 
+and from a new line tell me in details which clarification needed
 
 Give me ${fileName}
 

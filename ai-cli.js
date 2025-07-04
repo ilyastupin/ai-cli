@@ -7,9 +7,9 @@ import { deleteCodebase } from './src/use-cases/deleteCodebase.js'
 import { ask } from './src/use-cases/ask.js'
 import { askWithWebSearchVector } from './src/use-cases/askInternet.js'
 import { cleanUp } from './src/use-cases/cleanUp.js'
-import { applyChanges, overwriteFiles } from './src/use-cases/applyChanges.js'
+import { applyChanges, overwriteFiles, makeFileList } from './src/use-cases/applyChanges.js'
 
-import { getFileList, getFullContent } from './src/providers/prompts.js'
+import { getFileList, getFullContent, clarify } from './src/providers/prompts.js'
 
 function loadAndClearQuestion() {
   const filePath = path.resolve('question.txt')
@@ -69,9 +69,17 @@ function replaceFile(fileName, fileContent) {
 // await uploadCodebase()
 // await applyChanges(getLastFileList())
 
-overwriteFiles()
+// overwriteFiles()
 // await ask(loadAndClearQuestion())
+// console.log(question(0))
 // console.log(answer(0))
+
+// await ask(clarify(loadAndClearQuestion()))
+// console.log(answer(0))
+
+await makeFileList(loadAndClearQuestion())
+await applyChanges(answer(0))
+overwriteFiles()
 
 // 1. await deleteCodebase()
 // 2. await uploadCodebase()

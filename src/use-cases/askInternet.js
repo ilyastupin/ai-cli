@@ -59,7 +59,11 @@ async function ensureAssistantAndThread(name, instructions) {
 // Main exports
 
 /**
- * Internet-enhanced answer using vector store context
+ * Provides an internet-enhanced answer using vector store context.
+ *
+ * @param {string} question - The user’s question to query with web search integration.
+ * @param {Object} [context={}] - Additional context to provide during the question.
+ * @returns {Promise<string>} The assistant's reply.
  */
 export async function askWithWebSearchVector(question, context = {}) {
   const query = await generateSearchQuery(question)
@@ -73,7 +77,11 @@ export async function askWithWebSearchVector(question, context = {}) {
 }
 
 /**
- * Internet-enhanced answer using attached file context
+ * Provides an internet-enhanced answer using attached file context.
+ *
+ * @param {string} question - The user’s question to query with web search integration.
+ * @param {Object} [context={}] - Additional context to provide during the question.
+ * @returns {Promise<string>} The assistant's reply.
  */
 export async function askWithWebSearchFile(question, context = {}) {
   const query = await generateSearchQuery(question)
@@ -97,7 +105,11 @@ export async function askWithWebSearchFile(question, context = {}) {
 }
 
 /**
- * Internet-enhanced answer by appending raw search context directly into the prompt
+ * Provides an internet-enhanced answer by appending raw search context directly into the prompt.
+ *
+ * @param {string} question - The user’s question to query with appended web search context.
+ * @param {Object} [context={}] - Additional context to provide during the question.
+ * @returns {Promise<string>} The assistant's reply.
  */
 export async function askWithWebSearchInline(question, context = {}) {
   const query = await generateSearchQuery(question)
