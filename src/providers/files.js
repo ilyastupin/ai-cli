@@ -4,8 +4,9 @@ import { isBinary } from 'istextorbinary'
 
 /**
  * Checks whether a file is binary using its content.
- * @param {string} filePath
- * @returns {boolean}
+ * 
+ * @param {string} filePath - The path of the file to check.
+ * @returns {boolean} True if the file is binary, false if it's text-based.
  */
 function isBinaryFile(filePath) {
   try {
@@ -18,8 +19,9 @@ function isBinaryFile(filePath) {
 }
 
 /**
- * Returns latest Git commit hash and list of text-based (non-binary) tracked files.
- * @returns {{ commit: string, files: string[] }}
+ * Returns the latest Git commit hash and a list of text-based (non-binary) tracked files.
+ * 
+ * @returns {{ commit: string, files: string[] }} An object containing the latest commit hash and an array of text-based file paths.
  */
 export function getGitTrackedFiles() {
   try {
