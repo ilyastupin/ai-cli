@@ -7,7 +7,7 @@ import { deleteCodebase } from './src/use-cases/deleteCodebase.js'
 import { ask } from './src/use-cases/ask.js'
 import { askWithWebSearchVector } from './src/use-cases/askInternet.js'
 import { cleanUp } from './src/use-cases/cleanUp.js'
-import { applyChanges } from './src/use-cases/applyChanges.js'
+import { applyChanges, overwriteFiles } from './src/use-cases/applyChanges.js'
 
 import { getFileList, getFullContent } from './src/providers/prompts.js'
 
@@ -65,7 +65,13 @@ function replaceFile(fileName, fileContent) {
 // await ask(loadAndClearQuestion())
 // console.log(answer(0))
 
-await applyChanges(getLastFileList())
+// await deleteCodebase()
+// await uploadCodebase()
+// await applyChanges(getLastFileList())
+
+overwriteFiles()
+// await ask(loadAndClearQuestion())
+// console.log(answer(0))
 
 // 1. await deleteCodebase()
 // 2. await uploadCodebase()
@@ -79,3 +85,4 @@ await applyChanges(getLastFileList())
 // 7. await ask(loadAndClearQuestion()); console.log(answer(0))
 // 8. console.log(getLastFileList()) - something that can help
 // 9. await applyChanges(getLastFileList())
+// 10. overwriteFiles()

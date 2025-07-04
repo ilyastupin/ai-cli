@@ -22,7 +22,9 @@ Dont include ANY additional formatting in your output like markdown or bullets.
 
 I need a bare list with full paths - no other words
 
-But if you think that you need to ask some clarifying question return me only this: "clarification needed"
+But if you think that you need to ask some clarifying question return me this: "clarification needed" -
+this is important for me to parse it out properly - 
+and from a new line tell me in details which clarification needed
 `
 
 export const getSearchQuery = (question) => `
