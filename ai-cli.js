@@ -1,11 +1,14 @@
 import fs from 'fs'
 import path from 'path'
 import { setProjectName, question, answer, getLastUpdatedFileName } from './src/history/history.js'
+
 import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
 import { deleteCodebase } from './src/use-cases/deleteCodebase.js'
 import { ask } from './src/use-cases/ask.js'
 import { askWithWebSearchVector } from './src/use-cases/askInternet.js'
 import { cleanUp } from './src/use-cases/cleanUp.js'
+import { applyChanges } from './src/use-cases/applyChanges.js'
+
 import { getFileList, getFullContent } from './src/providers/prompts.js'
 
 function loadAndClearQuestion() {
@@ -36,22 +39,15 @@ function replaceFile(fileName, fileContent) {
 
 // console.log(question(0))
 // answer(1)
-//console.log(answer(0))
+// console.log(answer(0))
 // const q = loadAndClearQuestion()
 
-// const files = answer(0)
-//   .split(/\r?\n/)
-//   .filter((e) => !!e)
-// for (const f of files) {
-//   console.log(f)
-//   await ask(getFullContent(f), { action: 'getFullContent', fileName: f })
-// }
-
+// await applyChanges(answer(0))
 // setProjectName('ai-cli')
 // await uploadCodebase()
 // await ask(q)
 // await ask(getFileList(q), { action: 'getFileList' })
 // console.log(answer(0))
-replaceFile(getLastUpdatedFileName(), answer(0))
+// replaceFile(getLastUpdatedFileName(), answer(0))
 // await deleteCodebase()
 // cleanUp()
