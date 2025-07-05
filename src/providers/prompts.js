@@ -55,6 +55,11 @@ ${question}
 ---+++---
 `
 
+export const getDetailedResultsAfterInternetSearch = (question) => `
+${question}
+Now give me the detailed answer based on the updated information im vector storage
+`
+
 /**
  * Template for clarifying input.
  *

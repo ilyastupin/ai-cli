@@ -1,4 +1,4 @@
-import { getSearchQuery } from '../providers/prompts.js'
+import { getSearchQuery, getDetailedResultsAfterInternetSearch } from '../providers/prompts.js'
 import { braveSearchToFile } from '../providers/brave.js'
 import { getLatestVectorStoreId, getLatestThreadId, getProjectName, getLatestAssistantId } from '../history/history.js'
 import {
@@ -67,13 +67,19 @@ async function ensureAssistantAndThread(name, instructions) {
  */
 export async function askWithWebSearchVector(question, context = {}) {
   const query = await generateSearchQuery(question)
+  console.log(query)
   const resultFile = await performBraveSearch(query)
 
   const vectorStoreId = getLatestVectorStoreId()
   const uploadedCount = await uploadFilesToVectorStore(vectorStoreId, [resultFile])
   console.log(`📤 Uploaded ${uploadedCount} Brave result file(s) to vector store`)
 
-  return await askQuestion({ assistantId: getLatestAssistantId(), threadId: getLatestThreadId, question, context })
+  return await askQuestion({
+    assistantId: getLatestAssistantId(),
+    threadId: getLatestThreadId(),
+    question: getDetailedResultsAfterInternetSearch(question),
+    context
+  })
 }
 
 /**
