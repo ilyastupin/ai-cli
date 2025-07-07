@@ -6,7 +6,8 @@ import {
   answer,
   getLastUpdatedFileName,
   getLastFileList,
-  originalQuestion
+  originalQuestion,
+  getAllCreatedObjects
 } from './src/history/history.js'
 
 import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
@@ -71,7 +72,8 @@ function showMenu() {
   console.log('6. Ask question with Internet search')
   console.log('7. Delete codebase')
   console.log('8. Upload codebase')
-  console.log('9. Custom action')
+  console.log('9. Show all created objects')
+  console.log('10. Custom action')
 }
 
 async function showQuestion() {
@@ -123,6 +125,17 @@ async function uploadTheCodebase() {
   await uploadCodebase()
 }
 
+async function showAllCreatedObjects() {
+  const objects = getAllCreatedObjects()
+  objects.forEach((obj) => {
+    if (obj.funcName === 'uploadFilesToVectorStore' || obj.funcName === 'uploadFileToStorage') {
+      console.log(`Type: ${obj.funcName}, ID: ${obj.id}, File Path: ${obj.filePath}`)
+    } else {
+      console.log(`Type: ${obj.funcName}, ID: ${obj.id}`)
+    }
+  })
+}
+
 showMenu()
 const option = parseInt(await prompt('Select an option (default 0): '), 10) || 0
 
@@ -155,6 +168,9 @@ switch (option) {
     await uploadTheCodebase()
     break
   case 9:
+    await showAllCreatedObjects()
+    break
+  case 10:
     await custom()
     break
   default:

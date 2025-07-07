@@ -295,7 +295,8 @@ export function originalQuestion(n = 0) {
       if (
         entry.funcName === 'askQuestion' &&
         entry.arguments?.question &&
-        (entry.arguments.question.includes('---+++---') || !['getFullContent', 'getFileList'].includes(entry.arguments.context?.action))
+        (entry.arguments.question.includes('---+++---') ||
+          !['getFullContent', 'getFileList'].includes(entry.arguments.context?.action))
       ) {
         const segments = entry.arguments.question.split('---+++---')
         const questionSegment = segments.length > 2 ? segments[1].trim() : entry.arguments.question
@@ -311,5 +312,54 @@ export function originalQuestion(n = 0) {
     return relevantEntries[n]
   } catch (err) {
     console.error(`[originalQuestion] Failed to read log: ${err.message}`)
+  }
+}
+
+/**
+ * Retrieves all non-deleted objects created: vector stores, files, assistants, and threads.
+ * Validates single item assumption in upload files.
+ *
+ * @returns {Array<Object>} Array of non-deleted created objects.
+ */
+export function getAllCreatedObjects() {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return []
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+    const objects = logs
+      .filter((entry) => {
+        return (
+          [
+            'createVectorStore',
+            'uploadFilesToVectorStore',
+            'uploadFileToStorage',
+            'createAssistant',
+            'createThread'
+          ].includes(entry.funcName) &&
+          entry.result?.id &&
+          !checkIfDeleted(entry.result.id)
+        )
+      })
+      .map((entry) => ({ funcName: entry.funcName, id: entry.result.id, filePath: entry.arguments?.filePath }))
+
+    logs.forEach((entry) => {
+      if (
+        entry.funcName === 'uploadFilesToVectorStore' &&
+        (entry.arguments.filePaths.length !== 1 || entry.result.length !== 1)
+      ) {
+        throw new Error(`Constraint violation: More than one item in filePaths or result for ${entry.funcName}`)
+      }
+      if (entry.funcName === 'uploadFilesToVectorStore' && !checkIfDeleted(entry.result[0])) {
+        objects.push({
+          funcName: entry.funcName,
+          filePath: entry.arguments.filePaths[0],
+          id: entry.result[0]
+        })
+      }
+    })
+
+    return objects
+  } catch (err) {
+    console.warn(`[getAllCreatedObjects] Failed to retrieve objects: ${err.message}`)
+    return []
   }
 }
