@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { deleteThread, deleteAssistant, deleteVectorStore, deleteVectorStoreFile } from './src/providers/ai.js'
 import {
   setProjectName,
   question,
@@ -7,7 +8,8 @@ import {
   getLastUpdatedFileName,
   getLastFileList,
   originalQuestion,
-  getAllCreatedObjects
+  getAllCreatedObjects,
+  getVectorStoreIdByFileId
 } from './src/history/history.js'
 
 import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
@@ -20,6 +22,8 @@ import { commitChanges } from './src/use-cases/commitChanges.js'
 
 import { getFileList, getFullContent, clarify } from './src/providers/prompts.js'
 import readline from 'readline'
+
+const version = JSON.parse(fs.readFileSync('./package.json', 'utf8')).version
 
 /**
  * Synchronous-like prompt function for Node.js
@@ -62,7 +66,17 @@ function loadAndClearQuestion() {
   return question
 }
 
+function showHelp() {
+  console.log(`AI CLI Tool - Version ${version}`)
+  console.log('AI CLI for managing projects and interacting with OpenAI resources')
+  console.log('Available commands:')
+  console.log('  ai-cli create <name> - Create a new project with <name>.')
+  console.log('  ai-cli delete <id> - Delete an object by ID (thread, assistant, vector store, file).')
+  console.log('  ai-cli help - Show this help message.')
+}
+
 function showMenu() {
+  console.log('\nInteractive menu:')
   console.log('0. Change the code')
   console.log('1. Commit the change')
   console.log('2. Show question')
@@ -136,96 +150,103 @@ async function showAllCreatedObjects() {
   })
 }
 
-showMenu()
-const option = parseInt(await prompt('Select an option (default 0): '), 10) || 0
+function processCommand(args) {
+  const command = args[2]
+  const id = args[3]
 
-switch (option) {
-  case 0:
-    await changeTheCode()
-    break
-  case 1:
-    await commitChange()
-    break
-  case 2:
-    await showQuestion()
-    break
-  case 3:
-    await showOriginalQuestion()
-    break
-  case 4:
-    await showAnswer()
-    break
-  case 5:
-    await askQuestion()
-    break
-  case 6:
-    await askQuestionWithInternet()
-    break
-  case 7:
-    await deleteTheCodebase()
-    break
-  case 8:
-    await uploadTheCodebase()
-    break
-  case 9:
-    await showAllCreatedObjects()
-    break
-  case 10:
-    await custom()
-    break
-  default:
-    console.log('Invalid option')
+  switch (command) {
+    case 'create':
+      const projectName = id
+      if (projectName) {
+        setProjectName(projectName)
+        console.log(`Project "${projectName}" created.`)
+      } else {
+        console.log('❌ Please provide a project name.')
+      }
+      break
+    case 'delete':
+      if (id) {
+        try {
+          if (id.startsWith('th_')) {
+            deleteThread(id)
+          } else if (id.startsWith('as_')) {
+            deleteAssistant(id)
+          } else if (id.startsWith('vs_')) {
+            deleteVectorStore(id)
+          } else if (id.startsWith('file-')) {
+            const vectorStoreId = getVectorStoreIdByFileId(id)
+            if (!vectorStoreId) throw new Error('Vector store ID not found for the given file ID.')
+            deleteVectorStoreFile(vectorStoreId, id)
+          } else {
+            throw new Error('Unrecognized ID format.')
+          }
+          console.log(`Deleted object with ID: ${id}`)
+        } catch (error) {
+          console.error(`Failed to delete: ${error.message}`)
+        }
+      } else {
+        console.log('❌ Please provide an ID to delete.')
+      }
+      break
+    case 'help':
+      showHelp()
+      break
+    default:
+      console.log('Invalid command. Use "ai-cli help" for a list of commands.')
+  }
 }
 
-async function custom() {
-  // console.log(question(0))
-  // answer(1)
-  // console.log(answer(0))
-  // const q = loadAndClearQuestion()
-  // await applyChanges(answer(0))
-  // setProjectName('ai-cli')
-  // await uploadCodebase()
-  // await ask(q)
-  // await ask(getFileList(q), { action: 'getFileList' })
-  // console.log(answer(0))
-  // replaceFile(getLastUpdatedFileName(), answer(0))
-  // await deleteCodebase()
-  // cleanUp()
-  // const q = loadAndClearQuestion()
-  // await ask(getFileList(q), { action: 'getFileList' })
-  // console.log(answer(0))
-  // await uploadCodebase()
-  // await deleteCodebase()
-  // await uploadCodebase()
-  // await ask('what clarification')
-  // console.log(answer(0))
-  // await ask(loadAndClearQuestion())
-  // console.log(answer(0))
-  // await deleteCodebase()
-  // await uploadCodebase()
-  // await applyChanges(getLastFileList())
-  // overwriteFiles()
-  // await ask(loadAndClearQuestion())
-  // console.log(question(0))
-  // console.log(answer(0))
-  // await ask(clarify(loadAndClearQuestion()))
-  // console.log(answer(0))
-  // await makeFileList(loadAndClearQuestion())
-  // await applyChanges(answer(0))
-  // overwriteFiles()
-  // 1. await deleteCodebase()
-  // 2. await uploadCodebase()
-  //    New feature in question.txt
-  // 3. await ask(getFileList(loadAndClearQuestion()), { action: 'getFileList' }); console.log(answer(0))
-  // 4. await applyChanges(answer(0))
-  //    asked for clarification
-  // 5. await ask('what clarification');console.log(answer(0))
-  //     how to restart - find the list on your screen and copy out its tail only and put to questions.txt
-  // 6. await applyChanges(loadAndClearQuestion())
-  // 7. await ask(loadAndClearQuestion()); console.log(answer(0))
-  // 8. console.log(getLastFileList()) - something that can help
-  // 9. await applyChanges(getLastFileList())
-  // 10. overwriteFiles()
+async function main() {
+  if (process.argv.length > 2) {
+    processCommand(process.argv)
+  } else {
+    showHelp()
+    showMenu()
+    const option = parseInt(await prompt('Select an option (default 0): '), 10) || 0
+  
+    switch (option) {
+      case 0:
+        await changeTheCode()
+        break
+      case 1:
+        await commitChange()
+        break
+      case 2:
+        await showQuestion()
+        break
+      case 3:
+        await showOriginalQuestion()
+        break
+      case 4:
+        await showAnswer()
+        break
+      case 5:
+        await askQuestion()
+        break
+      case 6:
+        await askQuestionWithInternet()
+        break
+      case 7:
+        await deleteTheCodebase()
+        break
+      case 8:
+        await uploadTheCodebase()
+        break
+      case 9:
+        await showAllCreatedObjects()
+        break
+      case 10:
+        await custom()
+        break
+      default:
+        console.log('Invalid option')
+    }
+  }
+}
 
+main().catch(console.error)
+
+async function custom() {
+  // Example custom functionality can be placed here
   console.log(getLastFileList())
 }

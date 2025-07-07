@@ -363,3 +363,21 @@ export function getAllCreatedObjects() {
     return []
   }
 }
+
+/**
+ * Retrieves the vector store ID associated with a given file ID.
+ * 
+ * @param {string} fileId - The file ID to search for.
+ * @returns {string|undefined} The vector store ID if found, otherwise undefined.
+ */
+export function getVectorStoreIdByFileId(fileId) {
+  try {
+    if (!fs.existsSync(LOG_FILE)) return undefined
+    const logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf-8'))
+    const entry = logs.find((entry) => entry.funcName === 'uploadFilesToVectorStore' && entry.result.includes(fileId))
+    return entry?.arguments?.vectorStoreId
+  } catch (err) {
+    console.warn(`[getVectorStoreIdByFileId] Failed to find vector store ID: ${err.message}`)
+    return undefined
+  }
+}
