@@ -28,6 +28,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const version = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')).version
 
+let startTime
+
 /**
  * Synchronous-like prompt function for Node.js
  * @param {string} question - The question to display to the user
@@ -95,11 +97,13 @@ function showMenu() {
 }
 
 async function showQuestion() {
+  resetStartTime()
   const qNumber = parseInt(await prompt('Enter question number (default 0): '), 10) || 0
   console.log(question(qNumber))
 }
 
 async function showOriginalQuestion() {
+  resetStartTime()
   const qNumber = parseInt(await prompt('Enter original question number from the end: '), 10) || 0
   const original = originalQuestion(qNumber)
   if (original) {
@@ -111,6 +115,7 @@ async function showOriginalQuestion() {
 }
 
 async function showAnswer() {
+  resetStartTime()
   const aNumber = parseInt(await prompt('Enter answer number (default 0): '), 10) || 0
   console.log(answer(aNumber))
 }
@@ -171,9 +176,9 @@ function processCommand(args) {
     case 'delete':
       if (id) {
         try {
-          if (id.startsWith('th_')) {
+          if (id.startsWith('thread_')) {
             deleteThread(id)
-          } else if (id.startsWith('as_')) {
+          } else if (id.startsWith('asst_')) {
             deleteAssistant(id)
           } else if (id.startsWith('vs_')) {
             deleteVectorStore(id)
@@ -200,7 +205,13 @@ function processCommand(args) {
   }
 }
 
+function resetStartTime() {
+  startTime = new Date()
+}
+
 async function main() {
+  startTime = new Date()
+
   if (process.argv.length > 2) {
     processCommand(process.argv)
   } else {
@@ -208,6 +219,7 @@ async function main() {
     showMenu()
     const option = parseInt(await prompt('Select an option (default 0): '), 10) || 0
 
+    resetStartTime()
     switch (option) {
       case 0:
         await changeTheCode()
@@ -246,6 +258,10 @@ async function main() {
         console.log('Invalid option')
     }
   }
+
+  const endTime = new Date()
+  const duration = (endTime - startTime) / 1000
+  console.log(`⏱️ Command completed in ${duration} seconds`)
 }
 
 main().catch(console.error)

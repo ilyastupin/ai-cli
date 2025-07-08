@@ -1,1 +1,0 @@
-in ai-cli please add time measure how much time did it take to complete the whole command 
