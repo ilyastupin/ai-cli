@@ -22,8 +22,10 @@ import { commitChanges } from './src/use-cases/commitChanges.js'
 
 import { getFileList, getFullContent, clarify } from './src/providers/prompts.js'
 import readline from 'readline'
+import { fileURLToPath } from 'url'
 
-const __dirname = path.resolve(path.dirname(''));
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const version = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')).version
 
 /**
@@ -49,7 +51,8 @@ function loadAndClearQuestion() {
   const filePath = path.resolve('question.txt')
 
   if (!fs.existsSync(filePath)) {
-    console.log('⚠️ No new question: file "question.txt" does not exist.')
+    console.log('⚠️ File "question.txt" does not exist. Creating an empty one.')
+    fs.writeFileSync(filePath, '')
     process.exit(1)
   }
 
@@ -204,7 +207,7 @@ async function main() {
     showHelp()
     showMenu()
     const option = parseInt(await prompt('Select an option (default 0): '), 10) || 0
-  
+
     switch (option) {
       case 0:
         await changeTheCode()
