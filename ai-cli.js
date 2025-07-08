@@ -23,7 +23,8 @@ import { commitChanges } from './src/use-cases/commitChanges.js'
 import { getFileList, getFullContent, clarify } from './src/providers/prompts.js'
 import readline from 'readline'
 
-const version = JSON.parse(fs.readFileSync('./package.json', 'utf8')).version
+const __dirname = path.resolve(path.dirname(''));
+const version = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')).version
 
 /**
  * Synchronous-like prompt function for Node.js
