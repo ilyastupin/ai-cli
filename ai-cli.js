@@ -13,7 +13,6 @@ import {
 } from './src/history/history.js'
 
 import { uploadCodebase } from './src/use-cases/uploadCodebase.js'
-import { deleteCodebase } from './src/use-cases/deleteCodebase.js'
 import { ask } from './src/use-cases/ask.js'
 import { askWithWebSearchVector } from './src/use-cases/askInternet.js'
 import { cleanUp } from './src/use-cases/cleanUp.js'
@@ -90,10 +89,9 @@ function showMenu() {
   console.log('4. Show answer')
   console.log('5. Ask question')
   console.log('6. Ask question with Internet search')
-  console.log('7. Delete codebase')
-  console.log('8. Upload codebase')
-  console.log('9. Show all created objects')
-  console.log('10. Custom action')
+  console.log('7. Upload codebase')
+  console.log('8. Show all created objects')
+  console.log('9. Custom action')
 }
 
 async function showQuestion() {
@@ -138,10 +136,6 @@ async function askQuestion() {
 async function askQuestionWithInternet() {
   await askWithWebSearchVector(loadAndClearQuestion())
   console.log(answer(0))
-}
-
-async function deleteTheCodebase() {
-  await deleteCodebase()
 }
 
 async function uploadTheCodebase() {
@@ -243,15 +237,12 @@ async function main() {
         await askQuestionWithInternet()
         break
       case 7:
-        await deleteTheCodebase()
-        break
-      case 8:
         await uploadTheCodebase()
         break
-      case 9:
+      case 8:
         await showAllCreatedObjects()
         break
-      case 10:
+      case 9:
         await custom()
         break
       default:
